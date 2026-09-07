@@ -108,7 +108,7 @@ export function CheckoutForm() {
           <span>Nombre</span>
           <Input
             value={name}
-            onChange={(event) => setName(event.target.value)}
+            onValueChange={setName}
             placeholder="Cómo te llamas"
             className="h-11 rounded-2xl"
           />
@@ -117,7 +117,7 @@ export function CheckoutForm() {
           <span>Ciudad o zona</span>
           <Input
             value={city}
-            onChange={(event) => setCity(event.target.value)}
+            onValueChange={setCity}
             placeholder="Caracas, Maracaibo, Valencia…"
             className="h-11 rounded-2xl"
           />

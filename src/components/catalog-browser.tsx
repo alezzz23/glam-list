@@ -61,10 +61,11 @@ export function CatalogBrowser({ products }: { products: Product[] }) {
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onValueChange={setQuery}
             placeholder="Buscar sérum, labial, FPS…"
             className="h-11 rounded-full bg-card pr-4 pl-10"
             aria-label="Buscar productos"
+            type="search"
           />
         </div>
         <div className="flex flex-wrap gap-2">
