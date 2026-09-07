@@ -1,11 +1,13 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { SearchIcon } from "lucide-react"
 
 import { ProductCard } from "@/components/product-card"
 import { Input } from "@/components/ui/input"
+import { foldText } from "@/lib/format"
 import { categories, type CategoryId, type Product } from "@/lib/products"
 import { cn } from "@/lib/utils"
 
@@ -26,23 +28,27 @@ export function CatalogBrowser({ products }: { products: Product[] }) {
   const [query, setQuery] = useState(searchParams.get("q") ?? "")
   const [sort, setSort] = useState<SortId>("featured")
 
-  function setCategoria(next: string) {
+  function hrefFor(next: string) {
     const params = new URLSearchParams(searchParams.toString())
     if (next === "todos") params.delete("categoria")
     else params.set("categoria", next)
     const qs = params.toString()
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+    return qs ? `${pathname}?${qs}` : pathname
+  }
+
+  function setCategoria(next: string) {
+    router.replace(hrefFor(next), { scroll: false })
   }
 
   const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase()
+    const needle = foldText(query.trim())
     const list = products.filter((product) => {
       const matchesCategory = categoria === "todos" || product.category === categoria
       const matchesQuery =
         !needle ||
-        product.name.toLowerCase().includes(needle) ||
-        product.tagline.toLowerCase().includes(needle) ||
-        product.ingredients.some((item) => item.toLowerCase().includes(needle))
+        foldText(product.name).includes(needle) ||
+        foldText(product.tagline).includes(needle) ||
+        product.ingredients.some((item) => foldText(item).includes(needle))
       return matchesCategory && matchesQuery
     })
 
@@ -86,14 +92,14 @@ export function CatalogBrowser({ products }: { products: Product[] }) {
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-1">
-        <FilterChip active={categoria === "todos"} onClick={() => setCategoria("todos")}>
+        <FilterChip active={categoria === "todos"} href={hrefFor("todos")}>
           Todos
         </FilterChip>
         {categories.map((category) => (
           <FilterChip
             key={category.id}
             active={categoria === category.id}
-            onClick={() => setCategoria(category.id)}
+            href={hrefFor(category.id)}
           >
             {category.name}
           </FilterChip>
@@ -136,23 +142,23 @@ export function CatalogBrowser({ products }: { products: Product[] }) {
 
 function FilterChip({
   active,
+  href,
   children,
-  onClick,
 }: {
   active: boolean
+  href: string
   children: string
-  onClick: () => void
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <Link
+      href={href}
+      scroll={false}
       className={cn(
         "shrink-0 rounded-full px-4 py-2 text-sm transition-colors",
         active ? "bg-primary text-primary-foreground" : "bg-card ring-1 ring-foreground/10 hover:bg-secondary"
       )}
     >
       {children}
-    </button>
+    </Link>
   )
 }
