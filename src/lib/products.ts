@@ -1,0 +1,485 @@
+export const categories = [
+  {
+    id: "skincare",
+    name: "Skincare",
+    description: "Limpieza, sérums e hidratación para una piel en calma.",
+    image: "/images/spa-skincare.jpg",
+  },
+  {
+    id: "rostro",
+    name: "Rostro",
+    description: "Bases, correctores y polvos con un acabado de piel real.",
+    image: "/images/foundation.jpg",
+  },
+  {
+    id: "labios",
+    name: "Labios",
+    description: "Mates, glosses y dúos para un bloom de color.",
+    image: "/images/lipstick.jpg",
+  },
+  {
+    id: "ojos",
+    name: "Ojos",
+    description: "Máscaras, paletas y delineados suaves de diario.",
+    image: "/images/mascara.jpg",
+  },
+  {
+    id: "kits",
+    name: "Kits",
+    description: "Rutinas listas, pensadas para regalar o empezar.",
+    image: "/images/bottles.jpg",
+  },
+] as const
+
+export type CategoryId = (typeof categories)[number]["id"]
+
+export type ProductShade = {
+  id: string
+  name: string
+  hex: string
+}
+
+export type Product = {
+  id: string
+  slug: string
+  name: string
+  tagline: string
+  description: string
+  price: number
+  compareAtPrice?: number
+  category: CategoryId
+  image: string
+  size: string
+  stock: number
+  featured?: boolean
+  bestseller?: boolean
+  isNew?: boolean
+  shades?: ProductShade[]
+  ingredients: string[]
+  howToUse: string
+}
+
+export const products: Product[] = [
+  {
+    id: "gel-limpiador",
+    slug: "gel-limpiador-petalo",
+    name: "Gel Limpiador Pétalo",
+    tagline: "Limpia sin tensar la piel",
+    description:
+      "Un gel de textura seda que retira maquillaje ligero e impurezas. Con extracto de rosa y glicerina, deja el rostro fresco, no tirante. Ideal para el primer paso de la rutina de mañana y noche.",
+    price: 14,
+    category: "skincare",
+    image: "/images/cleanser.jpg",
+    size: "150 ml",
+    stock: 18,
+    featured: true,
+    ingredients: ["Agua de rosas", "Glicerina", "Pantenol", "Extracto de camelia"],
+    howToUse:
+      "Humedece el rostro, masajea una bomba entre palmas y enjuaga con agua tibia. Mañana y noche.",
+  },
+  {
+    id: "tonico-rosas",
+    slug: "tonico-rosas-hialuronico",
+    name: "Tónico de Rosas Hialurónico",
+    tagline: "Prepara la piel para el sérum",
+    description:
+      "Niebla fina con agua de rosas y ácido hialurónico de bajo peso. Restaura el pH después de limpiar y deja una película de hidratación que ayuda a que el resto de la rutina rinda más.",
+    price: 16,
+    category: "skincare",
+    image: "/images/white-bottles.jpg",
+    size: "120 ml",
+    stock: 14,
+    isNew: true,
+    ingredients: ["Agua de rosas", "Ácido hialurónico", "Niacinamida 2%", "Alantoína"],
+    howToUse:
+      "Aplica con las palmas o un algodón sobre piel limpia. Sigue con sérum sin esperar a que seque del todo.",
+  },
+  {
+    id: "serum-niacinamida",
+    slug: "serum-niacinamida-10",
+    name: "Sérum Niacinamida 10%",
+    tagline: "Poros más finos, brillo más parejo",
+    description:
+      "El favorito de recompra. Niacinamida al 10% con zinc para regular sebo, suavizar textura y unificar el tono con el uso constante. Ligero, se absorbe en segundos y no pica en piel sensible.",
+    price: 18,
+    category: "skincare",
+    image: "/images/serum.jpg",
+    size: "30 ml",
+    stock: 22,
+    featured: true,
+    bestseller: true,
+    ingredients: ["Niacinamida 10%", "Zinc PCA", "Glicerina", "Pentilenglicol"],
+    howToUse:
+      "2 o 3 gotas sobre rostro y cuello, de noche. Si tu piel es nueva con niacinamida, empieza en noches alternas.",
+  },
+  {
+    id: "serum-vit-c",
+    slug: "serum-vitamina-c-glow",
+    name: "Sérum Vitamina C Glow",
+    tagline: "Luminosidad de las 8 a.m.",
+    description:
+      "Derivado estable de vitamina C con ferúlico. Ilumina el cutis opaco y ayuda a prevenir manchas por sol. Textura acuosa, acaba en un glow de piel sana, no de glitter.",
+    price: 22,
+    category: "skincare",
+    image: "/images/oil.jpg",
+    size: "30 ml",
+    stock: 11,
+    featured: true,
+    ingredients: ["Ascorbil glucósido", "Ácido ferúlico", "Vitamina E", "Extracto de naranja"],
+    howToUse:
+      "De mañana, sobre el tónico y debajo del hidratante. Siempre cierra con protector solar.",
+  },
+  {
+    id: "crema-ceramidas",
+    slug: "crema-hidratante-ceramidas",
+    name: "Crema Hidratante con Ceramidas",
+    tagline: "Barrera fuerte, piel cómoda",
+    description:
+      "Crema rica pero no pesada, con ceramidas y manteca de karité. Repara la barrera después del aire acondicionado, el sol y el maquillaje. El frasco alcanza para semanas de ritual nocturno.",
+    price: 20,
+    category: "skincare",
+    image: "/images/spa-skincare.jpg",
+    size: "50 ml",
+    stock: 16,
+    bestseller: true,
+    ingredients: ["Ceramidas NP", "Manteca de karité", "Escualano", "Centella asiática"],
+    howToUse:
+      "Una nuez sobre rostro y cuello, de noche o como último paso en piel seca. En clima húmedo, usa menos cantidad.",
+  },
+  {
+    id: "contorno-ojos",
+    slug: "contorno-ojos-cafe-verde",
+    name: "Contorno de Ojos Café Verde",
+    tagline: "Despierta la mirada",
+    description:
+      "Gel-crema con cafeína y péptidos. Alivia ojeras de cansancio y hinchazón al despertar. El aplicador metálico fresco hace la mitad del trabajo.",
+    price: 16,
+    category: "skincare",
+    image: "/images/eye-cream.jpg",
+    size: "15 ml",
+    stock: 9,
+    ingredients: ["Cafeína", "Péptidos", "Ácido hialurónico", "Extracto de café verde"],
+    howToUse:
+      "Un toque del tamaño de un grano de arroz por ojo, dando golpecitos de dentro hacia fuera. Mañana y noche.",
+  },
+  {
+    id: "protector-solar",
+    slug: "protector-solar-fps-50",
+    name: "Protector Solar FPS 50 Invisible",
+    tagline: "El paso que no se siente",
+    description:
+      "FPS 50 de amplio espectro, acabado invisible en pieles medias y profundas. No deja película blanca ni olor a playa. Se lleva bien debajo de la base Bloom Glow.",
+    price: 19,
+    category: "skincare",
+    image: "/images/sunscreen.jpg",
+    size: "50 ml",
+    stock: 20,
+    featured: true,
+    bestseller: true,
+    ingredients: ["Filtros orgánicos UVA/UVB", "Niacinamida", "Vitamina E", "Sílice"],
+    howToUse:
+      "Dos dedos de producto para cara y cuello cada mañana. Reaplica si estás al sol más de dos horas.",
+  },
+  {
+    id: "mascarilla-arcilla",
+    slug: "mascarilla-arcilla-rosa",
+    name: "Mascarilla de Arcilla Rosa",
+    tagline: "Reset de poros el domingo",
+    description:
+      "Arcilla kaolín y rosa damascena para absorber exceso de sebo sin dejar el cutis como tiza. Diez minutos y la piel se siente limpia, no apretada.",
+    price: 12,
+    category: "skincare",
+    image: "/images/mask.jpg",
+    size: "60 ml",
+    stock: 3,
+    ingredients: ["Arcilla kaolín", "Arcilla rosa", "Agua de rosas", "Aloe vera"],
+    howToUse:
+      "Capa fina evitando el contorno de ojos. Deja 8–10 minutos y enjuaga. Una o dos veces por semana.",
+  },
+  {
+    id: "aceite-facial",
+    slug: "aceite-facial-rosa-mosqueta",
+    name: "Aceite Facial de Rosa Mosqueta",
+    tagline: "Nutrición de noche",
+    description:
+      "Aceite seco de rosa mosqueta prensada en frío, con un toque de geranio. Sella la rutina en piel deshidratada o con manchas de acné. Tres gotas alcanzan.",
+    price: 21,
+    category: "skincare",
+    image: "/images/bottles.jpg",
+    size: "30 ml",
+    stock: 8,
+    ingredients: ["Rosa mosqueta", "Sacha inchi", "Vitamina E", "Aceite esencial de geranio"],
+    howToUse:
+      "Sobre la crema, de noche. En clima caliente, mézclalo con el hidratante en la palma.",
+  },
+  {
+    id: "base-glow",
+    slug: "base-ligera-bloom-glow",
+    name: "Base Ligera Bloom Glow",
+    tagline: "Piel, pero más descansada",
+    description:
+      "Base de cobertura ligera a media que no se craquela. Hidrata mientras unifica, con un glow de piel real. Disponible en cuatro tonos pensados para el clima tropical.",
+    price: 24,
+    category: "rostro",
+    image: "/images/foundation.jpg",
+    size: "30 ml",
+    stock: 15,
+    featured: true,
+    bestseller: true,
+    shades: [
+      { id: "ivory", name: "Ivory", hex: "#F3D7C6" },
+      { id: "arena", name: "Arena", hex: "#E2B896" },
+      { id: "miel", name: "Miel", hex: "#C8885A" },
+      { id: "cacao", name: "Cacao", hex: "#8D5A3A" },
+    ],
+    ingredients: ["Agua", "Escualano", "Pigmentos minerales", "Ácido hialurónico"],
+    howToUse:
+      "Aplica con dedos o brocha húmeda desde el centro del rostro. Sella con polvo solo en la zona T si lo necesitas.",
+  },
+  {
+    id: "corrector",
+    slug: "corrector-cobertura-suave",
+    name: "Corrector de Cobertura Suave",
+    tagline: "Cubre sin marcar líneas",
+    description:
+      "Corrector cremoso que no se mete en ojeras. Cubre manchas y cansancio con un acabado de segunda piel. Un toque alcanza; se puede construir.",
+    price: 14,
+    category: "rostro",
+    image: "/images/glam.jpg",
+    size: "8 ml",
+    stock: 12,
+    shades: [
+      { id: "fair", name: "Fair", hex: "#F6DDC8" },
+      { id: "neutral", name: "Neutral", hex: "#E4C09A" },
+      { id: "warm", name: "Warm", hex: "#C48B62" },
+    ],
+    ingredients: ["Emolientes vegetales", "Cafeína", "Pigmentos", "Vitamina E"],
+    howToUse:
+      "Puntos bajo el ojo y en el centro del rostro. Difumina a toquecitos. Fija con polvo translúcido si usas tapabocas.",
+  },
+  {
+    id: "polvo-translucido",
+    slug: "polvo-compacto-translucido",
+    name: "Polvo Compacto Translúcido",
+    tagline: "Sella el glow, no lo apaga",
+    description:
+      "Polvo fino que controla brillo sin dejar efecto harina. El compacto viaja en la cartera y se recarga con el puff o una brocha esponjada.",
+    price: 15,
+    category: "rostro",
+    image: "/images/makeup-flatlay.jpg",
+    size: "9 g",
+    stock: 10,
+    ingredients: ["Sílice", "Almidón de arroz", "Mica", "Tocoferol"],
+    howToUse:
+      "Presiona en zona T y bajo el ojo. Evita capas pesadas sobre mejillas si quieres mantener el glow.",
+  },
+  {
+    id: "rubor-crema",
+    slug: "rubor-en-crema-petalo",
+    name: "Rubor en Crema Pétalo",
+    tagline: "Color de acabado de piel",
+    description:
+      "Rubor balm que se funde con los dedos. El tono Pétalo es un rosa frío de cerezo; Terracota calienta pieles doradas. Se ve como si hubieras caminado al sol, no como maquillaje.",
+    price: 13,
+    category: "rostro",
+    image: "/images/blush.jpg",
+    size: "6 g",
+    stock: 13,
+    isNew: true,
+    featured: true,
+    shades: [
+      { id: "petalo", name: "Pétalo", hex: "#E8A3B0" },
+      { id: "terracota", name: "Terracota", hex: "#C46B5A" },
+    ],
+    ingredients: ["Manteca de mango", "Cera de candelilla", "Pigmentos", "Vitamina E"],
+    howToUse:
+      "Sobre la base, en la parte alta de la mejilla, hacia las sienes. Puedes usarlo también en labios.",
+  },
+  {
+    id: "iluminador",
+    slug: "iluminador-champagne-bloom",
+    name: "Iluminador Champagne Bloom",
+    tagline: "Luz, no glitter",
+    description:
+      "Polvo prensado de partícula fina. Champagne se lee como luz en el pómulo, no como destello de discoteca. Un pase en el arco de cupido y el lagrimal cierra el look.",
+    price: 16,
+    category: "rostro",
+    image: "/images/glam.jpg",
+    size: "7 g",
+    stock: 7,
+    ingredients: ["Mica", "Nacre", "Aceite de jojoba", "Sílice"],
+    howToUse:
+      "Brocha abanico en pómulo, arco de cupido y lagrimal. Encima de crema, aplica con toques, no arrastres.",
+  },
+  {
+    id: "labial-mate",
+    slug: "labial-mate-cherry-blossom",
+    name: "Labial Mate Cherry Blossom",
+    tagline: "Mate cómodo, color que dura",
+    description:
+      "Mate que no reseca. La fórmula balm-to-matte se asienta en un minuto y aguanta café. Cherry es un rosa cereza; Nude Bloom, un beige con vida; Espresso, un café para noche.",
+    price: 12,
+    category: "labios",
+    image: "/images/lipstick.jpg",
+    size: "3.5 g",
+    stock: 19,
+    featured: true,
+    bestseller: true,
+    shades: [
+      { id: "cherry", name: "Cherry", hex: "#B33B55" },
+      { id: "nude", name: "Nude Bloom", hex: "#C4897A" },
+      { id: "espresso", name: "Espresso", hex: "#6B3A32" },
+    ],
+    ingredients: ["Aceite de ricino", "Cera de abeja", "Manteca de cacao", "Vitamina E"],
+    howToUse:
+      "Aplica desde el centro. Para más precisión, usa el Delineador Café en el borde y rellena.",
+  },
+  {
+    id: "gloss-cristal",
+    slug: "gloss-cristal",
+    name: "Gloss Cristal",
+    tagline: "Brillo de pétalo mojado",
+    description:
+      "Gloss no pegajoso con un destello suave. Encima del mate lo convierte en un semi-shine de revista. Solo también se ve como labio sano.",
+    price: 10,
+    category: "labios",
+    image: "/images/lip-studio.jpg",
+    size: "4 ml",
+    stock: 17,
+    isNew: true,
+    ingredients: ["Polibuteno", "Aceite de ricino", "Mica", "Extracto de vainilla"],
+    howToUse: "Una capa al centro del labio. Encima del mate, espera a que asiente 60 segundos.",
+  },
+  {
+    id: "mascara-volume",
+    slug: "mascara-volume-bloom",
+    name: "Máscara Volume Bloom",
+    tagline: "Pestañas de pétalo, no de araña",
+    description:
+      "Cepillo de densificar que separa y da curva sin grumos. El negro es profundo, no azulado. Se retira con el Gel Limpiador Pétalo, sin guerra en el ojo.",
+    price: 13,
+    category: "ojos",
+    image: "/images/mascara.jpg",
+    size: "10 ml",
+    stock: 14,
+    bestseller: true,
+    ingredients: ["Cera de carnauba", "Pantenol", "Pigmento negro", "Glicerina"],
+    howToUse:
+      "Zigzag desde la raíz. Dos capas en las superiores, una en las inferiores. No bombees el cepillo dentro del tubo.",
+  },
+  {
+    id: "paleta-nudes",
+    slug: "paleta-sombras-nudes",
+    name: "Paleta de Sombras Nudes",
+    tagline: "Ocho tonos, mil días de semana",
+    description:
+      "Mattes cremosos y un shimmer champagne. De un look de oficina a un smokey suave de sábado. Los tonos están pensados para pieles cálidas y neutras de Venezuela.",
+    price: 28,
+    category: "ojos",
+    image: "/images/makeup-flatlay.jpg",
+    size: "8 x 1.2 g",
+    stock: 6,
+    featured: true,
+    ingredients: ["Talco compactado", "Mica", "Pigmentos", "Aceite de jojoba"],
+    howToUse:
+      "Mate claro en el párpado, marrón medio en la cuenca, shimmer en el centro. Fija con un spray o un toque de polvo.",
+  },
+  {
+    id: "delineador",
+    slug: "delineador-liquido-cafe",
+    name: "Delineador Líquido Café",
+    tagline: "Trazo fino, color cacao",
+    description:
+      "Felt-tip de precisión en un café oscuro que suaviza más que el negro puro. Ideal para un delineado de diario o para sellar el labial Espresso. Esta pieza se agotó: avísanos por WhatsApp para la próxima llegada.",
+    price: 11,
+    category: "ojos",
+    image: "/images/mascara.jpg",
+    size: "1 ml",
+    stock: 0,
+    ingredients: ["Polímeros filmógenos", "Pigmento café", "Agua", "Pantenol"],
+    howToUse:
+      "Apoya el codo, traza desde el tercio externo. Si fallas, limpia con un hisopo y tónico, no con agua sola.",
+  },
+  {
+    id: "kit-rutina-glow",
+    slug: "kit-rutina-glow",
+    name: "Kit Rutina Glow",
+    tagline: "Limpia, trata e hidrata",
+    description:
+      "El trío con el que empiezan casi todas. Gel Limpiador Pétalo, Sérum Niacinamida 10% y Crema de Ceramidas, envueltos para regalo. Ahorras frente a comprarlos sueltos.",
+    price: 46,
+    compareAtPrice: 52,
+    category: "kits",
+    image: "/images/bottles.jpg",
+    size: "3 productos",
+    stock: 8,
+    featured: true,
+    bestseller: true,
+    ingredients: ["Gel Limpiador Pétalo", "Sérum Niacinamida 10%", "Crema con Ceramidas"],
+    howToUse:
+      "Noche: limpia, sérum, crema. Mañana: limpia, sérum (o Vitamina C si la tienes) y protector solar aparte.",
+  },
+  {
+    id: "kit-labios",
+    slug: "duo-de-labios-bloom",
+    name: "Dúo de Labios Bloom",
+    tagline: "Mate + cristal, listos para salir",
+    description:
+      "Labial Mate Cherry y Gloss Cristal juntos. Un look de día con el gloss solo; de tarde, mate más un toque de brillo al centro.",
+    price: 20,
+    compareAtPrice: 22,
+    category: "kits",
+    image: "/images/lip-close.jpg",
+    size: "2 productos",
+    stock: 10,
+    isNew: true,
+    shades: [
+      { id: "cherry", name: "Cherry", hex: "#B33B55" },
+      { id: "nude", name: "Nude Bloom", hex: "#C4897A" },
+    ],
+    ingredients: ["Labial Mate Cherry Blossom", "Gloss Cristal"],
+    howToUse: "Elige el tono del mate al pedir. El gloss es único y va con ambos.",
+  },
+  {
+    id: "set-brochas",
+    slug: "set-brochas-bloom",
+    name: "Set de Brochas Bloom",
+    tagline: "Cinco piezas para el ritual",
+    description:
+      "Brocha de base, corrector, polvo, rubor y difuminar sombras. Cerdas sintéticas suaves, mango en madera clara. Vienen en una funda de lino.",
+    price: 32,
+    category: "kits",
+    image: "/images/brushes.jpg",
+    size: "5 piezas",
+    stock: 5,
+    ingredients: ["Cerdas sintéticas", "Mango de madera", "Funda de lino"],
+    howToUse:
+      "Lava con jabón suave cada dos semanas. Seca con las cerdas hacia abajo para no aflojar el mango.",
+  },
+]
+
+export function getProductBySlug(slug: string) {
+  return products.find((product) => product.slug === slug)
+}
+
+export function getProductById(id: string) {
+  return products.find((product) => product.id === id)
+}
+
+export function getFeaturedProducts() {
+  return products.filter((product) => product.featured)
+}
+
+export function getBestsellers() {
+  return products.filter((product) => product.bestseller)
+}
+
+export function getRelatedProducts(product: Product, limit = 4) {
+  return products
+    .filter((item) => item.id !== product.id && item.category === product.category)
+    .slice(0, limit)
+}
+
+export function getCategory(id: string) {
+  return categories.find((category) => category.id === id)
+}
