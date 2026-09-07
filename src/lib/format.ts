@@ -11,3 +11,10 @@ export function formatStock(stock: number) {
   if (stock <= 4) return `Quedan ${stock}`
   return "En stock"
 }
+
+export function foldText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+}
