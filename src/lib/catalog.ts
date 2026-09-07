@@ -1,11 +1,20 @@
 import "server-only"
 
-import { cache } from "react"
 import type { Prisma } from "@prisma/client"
+import { connection } from "next/server"
+import { cache } from "react"
 
 import { prisma } from "@/lib/db"
 import { defaultAbout, defaultFaqs, defaultHome, defaultShop } from "@/lib/site-defaults"
 import type { AboutContent, Category, FaqItem, HomeContent, Product, Shop, SiteContent } from "@/lib/types"
+
+async function queryCatalog<T>(fallback: T, query: () => Promise<T>): Promise<T> {
+  // Postpone until a real request so `next build` does not hit Postgres.
+  // Vercel prerenders /_not-found and other static routes without DATABASE_URL.
+  await connection()
+  if (!process.env.DATABASE_URL) return fallback
+  return query()
+}
 
 type ProductRecord = Prisma.ProductGetPayload<{ include: { shades: true } }>
 
@@ -86,37 +95,47 @@ function mapShop(row: {
 }
 
 export const getShop = cache(async (): Promise<Shop> => {
-  const row = await prisma.shopSettings.findUnique({ where: { id: "default" } })
-  return row ? mapShop(row) : defaultShop
+  return queryCatalog(defaultShop, async () => {
+    const row = await prisma.shopSettings.findUnique({ where: { id: "default" } })
+    return row ? mapShop(row) : defaultShop
+  })
 })
 
 export const getCategories = cache(async (): Promise<Category[]> => {
-  const rows = await prisma.category.findMany({ orderBy: { sortOrder: "asc" } })
-  return rows.map(mapCategory)
+  return queryCatalog([], async () => {
+    const rows = await prisma.category.findMany({ orderBy: { sortOrder: "asc" } })
+    return rows.map(mapCategory)
+  })
 })
 
 export const getProducts = cache(async (): Promise<Product[]> => {
-  const rows = await prisma.product.findMany({
-    include: { shades: true },
-    orderBy: [{ featured: "desc" }, { name: "asc" }],
+  return queryCatalog([], async () => {
+    const rows = await prisma.product.findMany({
+      include: { shades: true },
+      orderBy: [{ featured: "desc" }, { name: "asc" }],
+    })
+    return rows.map(mapProduct)
   })
-  return rows.map(mapProduct)
 })
 
 export const getProductBySlug = cache(async (slug: string) => {
-  const row = await prisma.product.findUnique({
-    where: { slug },
-    include: { shades: true },
+  return queryCatalog(undefined, async () => {
+    const row = await prisma.product.findUnique({
+      where: { slug },
+      include: { shades: true },
+    })
+    return row ? mapProduct(row) : undefined
   })
-  return row ? mapProduct(row) : undefined
 })
 
 export const getProductRecord = cache(async (id: string) => {
-  const row = await prisma.product.findUnique({
-    where: { id },
-    include: { shades: true },
+  return queryCatalog(undefined, async () => {
+    const row = await prisma.product.findUnique({
+      where: { id },
+      include: { shades: true },
+    })
+    return row ? mapProduct(row) : undefined
   })
-  return row ? mapProduct(row) : undefined
 })
 
 export async function getFeaturedProducts(limit = 4) {
@@ -209,12 +228,19 @@ function parseFaqs(value: unknown): FaqItem[] {
 }
 
 export const getSiteContent = cache(async (): Promise<SiteContent> => {
-  const row = await prisma.siteContent.findUnique({ where: { id: "default" } })
-  return {
-    home: parseHome(row?.home),
-    about: parseAbout(row?.about),
-    faqs: parseFaqs(row?.faqs),
+  const fallback = {
+    home: defaultHome,
+    about: defaultAbout,
+    faqs: defaultFaqs,
   }
+  return queryCatalog(fallback, async () => {
+    const row = await prisma.siteContent.findUnique({ where: { id: "default" } })
+    return {
+      home: parseHome(row?.home),
+      about: parseAbout(row?.about),
+      faqs: parseFaqs(row?.faqs),
+    }
+  })
 })
 
 export const getStorefront = cache(async () => {
