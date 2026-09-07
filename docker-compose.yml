@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "54328:5432"
+    environment:
+      POSTGRES_USER: bloom
+      POSTGRES_PASSWORD: bloom
+      POSTGRES_DB: bloom_shop
+    volumes:
+      - bloom_pg:/var/lib/postgresql/data
+
+volumes:
+  bloom_pg:

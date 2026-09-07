@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Category {
+  id          String    @id
+  name        String
+  description String
+  image       String
+  sortOrder   Int       @default(0)
+  products    Product[]
+}
+
+model Product {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  name           String
+  tagline        String
+  description    String
+  price          Decimal        @db.Decimal(10, 2)
+  compareAtPrice Decimal?       @db.Decimal(10, 2)
+  categoryId     String
+  category       Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  image          String
+  size           String
+  stock          Int            @default(0)
+  featured       Boolean        @default(false)
+  bestseller     Boolean        @default(false)
+  isNew          Boolean        @default(false)
+  ingredients    String[]
+  howToUse       String         @default("")
+  shades         ProductShade[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([categoryId])
+  @@index([featured])
+}
+
+model ProductShade {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  code      String
+  name      String
+  hex       String
+  sortOrder Int     @default(0)
+
+  @@unique([productId, code])
+}
+
+model ShopSettings {
+  id            String   @id @default("default")
+  name          String
+  suffix        String
+  tagline       String
+  description   String
+  footerText    String
+  whatsapp      String
+  instagram     String
+  email         String
+  location      String
+  hours         String
+  currencyLabel String
+  logoUrl       String
+  updatedAt     DateTime @updatedAt
+}
+
+model SiteContent {
+  id        String   @id @default("default")
+  home      Json
+  about     Json
+  faqs      Json
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}

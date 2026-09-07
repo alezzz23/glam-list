@@ -75,7 +75,7 @@ export function SiteHeader() {
 
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <Image
-            src="/logo.jpg"
+            src={shop.logoUrl}
             alt=""
             width={48}
             height={48}

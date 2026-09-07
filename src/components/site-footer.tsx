@@ -18,7 +18,7 @@ export function SiteFooter() {
         <div className="space-y-4">
           <Link href="/" className="flex items-center gap-3">
             <Image
-              src="/logo.jpg"
+              src={shop.logoUrl}
               alt={shop.fullName}
               width={56}
               height={56}
@@ -30,8 +30,7 @@ export function SiteFooter() {
             </span>
           </Link>
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Boutique de maquillaje y skincare en Venezuela. Pedidos por WhatsApp,
-            precios en dólares y envíos a todo el país.
+            {shop.footerText}
           </p>
         </div>
         <div>

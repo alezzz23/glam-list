@@ -8,7 +8,7 @@ import { SearchIcon } from "lucide-react"
 import { ProductCard } from "@/components/product-card"
 import { Input } from "@/components/ui/input"
 import { foldText } from "@/lib/format"
-import { categories, type CategoryId, type Product } from "@/lib/products"
+import type { Category, CategoryId, Product } from "@/lib/products"
 import { cn } from "@/lib/utils"
 
 const sorts = [
@@ -20,7 +20,13 @@ const sorts = [
 
 type SortId = (typeof sorts)[number]["id"]
 
-export function CatalogBrowser({ products }: { products: Product[] }) {
+export function CatalogBrowser({
+  products,
+  categories,
+}: {
+  products: Product[]
+  categories: Category[]
+}) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()

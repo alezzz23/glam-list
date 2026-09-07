@@ -34,9 +34,18 @@ yarn-error.log*
 .env*
 !.env.example
 
+# uploaded admin images
+/public/uploads/*
+!/public/uploads/.gitkeep
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agents
+.agents/
+.claude
+.kiro

@@ -1,11 +1,8 @@
 import type { Metadata } from "next"
+import type { ReactNode } from "react"
 import { Outfit, Playfair_Display } from "next/font/google"
 
-import { Providers } from "@/components/providers"
-import { SiteFooter } from "@/components/site-footer"
-import { SiteHeader } from "@/components/site-header"
-import { WhatsAppFloat } from "@/components/whatsapp-float"
-import { shop } from "@/lib/shop"
+import { getShop } from "@/lib/catalog"
 
 import "./globals.css"
 
@@ -19,32 +16,29 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 })
 
-export const metadata: Metadata = {
-  title: {
-    default: `${shop.fullName} · Maquillaje y skincare`,
-    template: `%s · ${shop.fullName}`,
-  },
-  description: shop.description,
-  icons: {
-    icon: "/logo.jpg",
-    apple: "/logo.jpg",
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const shop = await getShop()
+  return {
+    title: {
+      default: `${shop.fullName} · Maquillaje y skincare`,
+      template: `%s · ${shop.fullName}`,
+    },
+    description: shop.description,
+    icons: {
+      icon: shop.logoUrl,
+      apple: shop.logoUrl,
+    },
+  }
 }
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="es"
+      data-scroll-behavior="smooth"
       className={`${outfit.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
-        <Providers>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-          <WhatsAppFloat />
-        </Providers>
-      </body>
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   )
 }

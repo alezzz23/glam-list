@@ -1,4 +1,9 @@
-export const categories = [
+import type { Category, Product } from "@/lib/types"
+
+export type { Category, CategoryId, Product, ProductShade } from "@/lib/types"
+export { getProductById } from "@/lib/catalog-cache"
+
+export const seedCategories: Category[] = [
   {
     id: "skincare",
     name: "Skincare",
@@ -29,37 +34,9 @@ export const categories = [
     description: "Rutinas listas, pensadas para regalar o empezar.",
     image: "/images/bottles.jpg",
   },
-] as const
+]
 
-export type CategoryId = (typeof categories)[number]["id"]
-
-export type ProductShade = {
-  id: string
-  name: string
-  hex: string
-}
-
-export type Product = {
-  id: string
-  slug: string
-  name: string
-  tagline: string
-  description: string
-  price: number
-  compareAtPrice?: number
-  category: CategoryId
-  image: string
-  size: string
-  stock: number
-  featured?: boolean
-  bestseller?: boolean
-  isNew?: boolean
-  shades?: ProductShade[]
-  ingredients: string[]
-  howToUse: string
-}
-
-export const products: Product[] = [
+export const seedProducts: Product[] = [
   {
     id: "gel-limpiador",
     slug: "gel-limpiador-petalo",
@@ -457,29 +434,3 @@ export const products: Product[] = [
       "Lava con jabón suave cada dos semanas. Seca con las cerdas hacia abajo para no aflojar el mango.",
   },
 ]
-
-export function getProductBySlug(slug: string) {
-  return products.find((product) => product.slug === slug)
-}
-
-export function getProductById(id: string) {
-  return products.find((product) => product.id === id)
-}
-
-export function getFeaturedProducts() {
-  return products.filter((product) => product.featured)
-}
-
-export function getBestsellers() {
-  return products.filter((product) => product.bestseller)
-}
-
-export function getRelatedProducts(product: Product, limit = 4) {
-  return products
-    .filter((item) => item.id !== product.id && item.category === product.category)
-    .slice(0, limit)
-}
-
-export function getCategory(id: string) {
-  return categories.find((category) => category.id === id)
-}

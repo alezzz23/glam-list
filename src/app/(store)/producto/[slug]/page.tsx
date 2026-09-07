@@ -5,20 +5,12 @@ import { notFound } from "next/navigation"
 import { ProductCard } from "@/components/product-card"
 import { ProductPurchase } from "@/components/product-purchase"
 import { Badge } from "@/components/ui/badge"
+import { getProductBySlug, getRelatedProducts } from "@/lib/catalog"
 import { formatPrice } from "@/lib/format"
-import { getProductBySlug, getRelatedProducts, products } from "@/lib/products"
 
-type Props = {
-  params: Promise<{ slug: string }>
-}
-
-export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }))
-}
-
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const product = getProductBySlug(slug)
+  const product = await getProductBySlug(slug)
   if (!product) return { title: "Producto" }
   return {
     title: product.name,
@@ -26,12 +18,12 @@ export async function generateMetadata({ params }: Props) {
   }
 }
 
-export default async function ProductoPage({ params }: Props) {
+export default async function ProductoPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const product = getProductBySlug(slug)
+  const product = await getProductBySlug(slug)
   if (!product) notFound()
 
-  const related = getRelatedProducts(product)
+  const related = await getRelatedProducts(product)
   const soldOut = product.stock <= 0
 
   return (

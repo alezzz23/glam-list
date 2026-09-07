@@ -1,15 +1,19 @@
 import { Suspense } from "react"
 
 import { CatalogBrowser } from "@/components/catalog-browser"
-import { products } from "@/lib/products"
+import { getCategories, getProducts, getShop } from "@/lib/catalog"
 
-export const metadata = {
-  title: "Catálogo",
-  description:
-    "Maquillaje, skincare y kits de Bloom Shop.VE. Filtra por categoría y pide por WhatsApp.",
+export async function generateMetadata() {
+  const shop = await getShop()
+  return {
+    title: "Catálogo",
+    description: `Maquillaje, skincare y kits de ${shop.fullName}. Filtra por categoría y pide por WhatsApp.`,
+  }
 }
 
-export default function CatalogoPage() {
+export default async function CatalogoPage() {
+  const [products, categories] = await Promise.all([getProducts(), getCategories()])
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <p className="text-xs tracking-[0.22em] text-muted-foreground uppercase">Catálogo</p>
@@ -20,7 +24,7 @@ export default function CatalogoPage() {
       </p>
       <div className="mt-10">
         <Suspense fallback={<CatalogSkeleton />}>
-          <CatalogBrowser products={products} />
+          <CatalogBrowser products={products} categories={categories} />
         </Suspense>
       </div>
     </div>

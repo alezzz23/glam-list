@@ -4,13 +4,16 @@ import { ArrowRightIcon, MessageCircleIcon, PackageIcon, SparklesIcon, TruckIcon
 
 import { ProductCard } from "@/components/product-card"
 import { Button } from "@/components/ui/button"
-import { categories, getBestsellers, getFeaturedProducts } from "@/lib/products"
-import { shop } from "@/lib/shop"
+import { getStorefront } from "@/lib/catalog"
 import { whatsappUrl } from "@/lib/whatsapp"
 
-export default function HomePage() {
-  const featured = getFeaturedProducts().slice(0, 4)
-  const bestsellers = getBestsellers().slice(0, 3)
+const highlightIcons = [PackageIcon, SparklesIcon, TruckIcon]
+
+export default async function HomePage() {
+  const { shop, categories, products, content } = await getStorefront()
+  const { home } = content
+  const featured = products.filter((product) => product.featured).slice(0, 4)
+  const bestsellers = products.filter((product) => product.bestseller).slice(0, 3)
 
   return (
     <div>
@@ -18,15 +21,13 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
           <div className="space-y-6">
             <p className="text-xs tracking-[0.28em] text-lavender uppercase">
-              Boutique · Venezuela
+              {home.heroKicker}
             </p>
             <h1 className="font-heading max-w-xl text-4xl leading-[1.1] text-balance sm:text-5xl lg:text-6xl">
-              Maquillaje y skincare que se siente como un ritual, no como una lista.
+              {home.heroTitle}
             </h1>
             <p className="max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
-              {shop.fullName} reúne bases de glow, labiales mate y sérums que
-              rinden en clima tropical. Eliges en el catálogo; el pedido se
-              cierra por WhatsApp, con pago en dólares.
+              {home.heroSubtitle}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
@@ -58,7 +59,7 @@ export default function HomePage() {
             <div className="absolute -inset-6 rounded-[2.5rem] bg-blush/50 blur-2xl" />
             <div className="relative overflow-hidden rounded-[2rem] ring-1 ring-foreground/10">
               <Image
-                src="/images/hero-makeup.jpg"
+                src={home.heroImage}
                 alt="Mesa con maquillaje y brochas"
                 width={900}
                 height={720}
@@ -66,10 +67,8 @@ export default function HomePage() {
                 priority
               />
               <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-foreground/55 to-transparent p-5 text-primary-foreground">
-                <p className="font-heading text-2xl">Bloom, en serio.</p>
-                <p className="text-sm text-primary-foreground/80">
-                  Piezas de diario, kits para regalar y stock que avisamos al instante.
-                </p>
+                <p className="font-heading text-2xl">{home.heroCaptionTitle}</p>
+                <p className="text-sm text-primary-foreground/80">{home.heroCaptionText}</p>
               </div>
             </div>
           </div>
@@ -78,42 +77,31 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
         <div className="grid gap-3 sm:grid-cols-3">
-          {[
-            {
-              icon: PackageIcon,
-              title: "Catálogo real",
-              text: "Stock a la vista. Si se agota, lo marcamos y puedes avisarnos.",
-            },
-            {
-              icon: SparklesIcon,
-              title: "Tonos para el clima",
-              text: "Bases, rubores y nudes pensados para pieles de Venezuela.",
-            },
-            {
-              icon: TruckIcon,
-              title: "Envío nacional",
-              text: "Zoom, MRW o delivery. Coordinamos el envío en el mismo chat.",
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="flex gap-3 rounded-3xl bg-card p-4 ring-1 ring-foreground/8"
-            >
-              <item.icon className="mt-0.5 size-5 text-lavender" />
-              <div>
-                <p className="font-medium">{item.title}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{item.text}</p>
+          {home.highlights.map((item, index) => {
+            const Icon = highlightIcons[index] ?? SparklesIcon
+            return (
+              <div
+                key={item.title}
+                className="flex gap-3 rounded-3xl bg-card p-4 ring-1 ring-foreground/8"
+              >
+                <Icon className="mt-0.5 size-5 text-lavender" />
+                <div>
+                  <p className="font-medium">{item.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{item.text}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs tracking-[0.22em] text-muted-foreground uppercase">Colecciones</p>
-            <h2 className="mt-2 font-heading text-3xl sm:text-4xl">Elige por ritual</h2>
+            <p className="text-xs tracking-[0.22em] text-muted-foreground uppercase">
+              {home.collectionsEyebrow}
+            </p>
+            <h2 className="mt-2 font-heading text-3xl sm:text-4xl">{home.collectionsTitle}</h2>
           </div>
           <Link href="/catalogo" className="hidden text-sm underline-offset-4 hover:underline sm:inline">
             Ver todo
@@ -147,8 +135,10 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
         <div className="mb-8">
-          <p className="text-xs tracking-[0.22em] text-muted-foreground uppercase">Esta semana</p>
-          <h2 className="mt-2 font-heading text-3xl sm:text-4xl">Lo que más se está llevando</h2>
+          <p className="text-xs tracking-[0.22em] text-muted-foreground uppercase">
+            {home.featuredEyebrow}
+          </p>
+          <h2 className="mt-2 font-heading text-3xl sm:text-4xl">{home.featuredTitle}</h2>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {featured.map((product) => (
@@ -160,33 +150,27 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="grid overflow-hidden rounded-[2rem] bg-card ring-1 ring-foreground/8 md:grid-cols-2">
           <Image
-            src="/images/glow-skin.jpg"
+            src={home.houseImage}
             alt="Piel luminosa después de la rutina"
             width={800}
             height={900}
             className="h-full min-h-64 w-full object-cover"
           />
           <div className="flex flex-col justify-center gap-5 p-6 sm:p-10">
-            <p className="text-xs tracking-[0.22em] text-lavender uppercase">La casa</p>
-            <h2 className="font-heading text-3xl sm:text-4xl">Una boutique, no un marketplace.</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Armamos el catálogo como se arma un tocador: pocas piezas, bien
-              elegidas, con instrucciones claras. Si un tono no existe todavía,
-              lo anotamos. Si un sérum se acaba, no lo escondemos.
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              Los precios están en USD. Pagos por Zelle, pago móvil o
-              transferencia, y el envío se acuerda en el chat — igual que en
-              Instagram, con la diferencia de que aquí ves stock, fotos y total
-              antes de escribir.
-            </p>
+            <p className="text-xs tracking-[0.22em] text-lavender uppercase">{home.houseEyebrow}</p>
+            <h2 className="font-heading text-3xl sm:text-4xl">{home.houseTitle}</h2>
+            {home.houseParagraphs.map((paragraph) => (
+              <p key={paragraph} className="text-muted-foreground leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
         <div className="mb-8 flex items-end justify-between">
-          <h2 className="font-heading text-3xl sm:text-4xl">Favoritos de recompra</h2>
+          <h2 className="font-heading text-3xl sm:text-4xl">{home.bestsellersTitle}</h2>
           <Link href="/catalogo" className="text-sm underline-offset-4 hover:underline">
             Catálogo
           </Link>
@@ -200,30 +184,16 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="rounded-[2rem] bg-secondary/70 px-6 py-12 text-center sm:px-12">
-          <p className="text-xs tracking-[0.22em] text-muted-foreground uppercase">Cómo comprar</p>
+          <p className="text-xs tracking-[0.22em] text-muted-foreground uppercase">{home.howEyebrow}</p>
           <h2 className="mx-auto mt-3 max-w-xl font-heading text-3xl sm:text-4xl">
-            Tres pasos, sin pasarela rara.
+            {home.howTitle}
           </h2>
           <div className="mx-auto mt-10 grid max-w-4xl gap-8 text-left sm:grid-cols-3">
-            {[
-              {
-                step: "01",
-                title: "Llena la bolsa",
-                text: "Filtra por skincare, rostro, labios u ojos. Elige tono si el producto lo pide.",
-              },
-              {
-                step: "02",
-                title: "Revisa el total",
-                text: "En el carrito ves cantidades y USD. Agrega tu ciudad y una nota si hace falta.",
-              },
-              {
-                step: "03",
-                title: "Escríbenos",
-                text: "WhatsApp se abre con el pedido armado. Confirmamos stock, pago y envío.",
-              },
-            ].map((item) => (
-              <div key={item.step}>
-                <p className="font-heading text-3xl text-lavender">{item.step}</p>
+            {home.howSteps.map((item, index) => (
+              <div key={item.title}>
+                <p className="font-heading text-3xl text-lavender">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
                 <p className="mt-2 font-medium">{item.title}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{item.text}</p>
               </div>
@@ -234,7 +204,7 @@ export default function HomePage() {
             render={<Link href="/catalogo" />}
             className="mt-10 h-12 rounded-full px-8"
           >
-            Empezar a elegir
+            {home.howCta}
           </Button>
         </div>
       </section>
