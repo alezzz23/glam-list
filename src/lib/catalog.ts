@@ -22,6 +22,12 @@ async function queryCatalog<T>(fallback: T, query: () => Promise<T>): Promise<T>
   }
 }
 
+async function queryAdmin<T>(fallback: T, query: () => Promise<T>): Promise<T> {
+  await connection()
+  if (!process.env.DATABASE_URL) return fallback
+  return query()
+}
+
 type ProductRecord = Prisma.ProductGetPayload<{ include: { shades: true } }>
 
 function toNumber(value: Prisma.Decimal | number | null | undefined) {
@@ -56,6 +62,37 @@ export function mapProduct(row: ProductRecord): Product {
     shades: shades.length ? shades : undefined,
     ingredients: row.ingredients,
     howToUse: row.howToUse,
+  }
+}
+
+function mapAdminListProduct(row: {
+  id: string
+  slug: string
+  name: string
+  price: Prisma.Decimal | number
+  categoryId: string
+  image: string
+  stock: number
+  featured: boolean
+  bestseller: boolean
+  isNew: boolean
+}): Product {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    tagline: "",
+    description: "",
+    price: Number(row.price),
+    category: row.categoryId,
+    image: row.image,
+    size: "",
+    stock: row.stock,
+    featured: row.featured,
+    bestseller: row.bestseller,
+    isNew: row.isNew,
+    ingredients: [],
+    howToUse: "",
   }
 }
 
@@ -113,23 +150,56 @@ export const getProducts = cache(async (): Promise<Product[]> => {
 })
 
 export const getAdminShop = cache(async (): Promise<Shop> => {
-  return (await loadFreshStorefront()).shop
+  return queryAdmin(defaultShop, async () => {
+    const row = await prisma.shopSettings.findUnique({ where: { id: "default" } })
+    return row ? mapShop(row) : defaultShop
+  })
 })
 
 export const getAdminCategories = cache(async (): Promise<Category[]> => {
-  return (await loadFreshStorefront()).categories
+  return queryAdmin([] as Category[], async () => {
+    const rows = await prisma.category.findMany({ orderBy: { sortOrder: "asc" } })
+    return rows.map(mapCategory)
+  })
 })
 
 export const getAdminProducts = cache(async (): Promise<Product[]> => {
-  return (await loadFreshStorefront()).products
+  return queryAdmin([] as Product[], async () => {
+    const rows = await prisma.product.findMany({
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        price: true,
+        categoryId: true,
+        image: true,
+        stock: true,
+        featured: true,
+        bestseller: true,
+        isNew: true,
+      },
+      orderBy: { name: "asc" },
+    })
+    return rows.map(mapAdminListProduct)
+  })
 })
 
 export const getAdminSiteContent = cache(async (): Promise<SiteContent> => {
-  return (await loadFreshStorefront()).content
+  return queryAdmin(
+    { home: defaultHome, about: defaultAbout, faqs: defaultFaqs },
+    async () => {
+      const row = await prisma.siteContent.findUnique({ where: { id: "default" } })
+      return {
+        home: parseHome(row?.home),
+        about: parseAbout(row?.about),
+        faqs: parseFaqs(row?.faqs),
+      }
+    }
+  )
 })
 
 export const getAdminProduct = cache(async (id: string) => {
-  return queryCatalog(null, async () => {
+  return queryAdmin(null, async () => {
     const row = await prisma.product.findUnique({
       where: { id },
       include: { shades: true },
@@ -255,15 +325,14 @@ const emptyStorefront = {
 }
 
 async function fetchStorefrontFromDb() {
-  const [shopRow, categoryRows, productRows, contentRow] = await Promise.all([
-    prisma.shopSettings.findUnique({ where: { id: "default" } }),
-    prisma.category.findMany({ orderBy: { sortOrder: "asc" } }),
-    prisma.product.findMany({
-      include: { shades: true },
-      orderBy: [{ featured: "desc" }, { name: "asc" }],
-    }),
-    prisma.siteContent.findUnique({ where: { id: "default" } }),
-  ])
+  // Sequential on purpose: Prisma uses connection_limit=1 against the pooler.
+  const shopRow = await prisma.shopSettings.findUnique({ where: { id: "default" } })
+  const categoryRows = await prisma.category.findMany({ orderBy: { sortOrder: "asc" } })
+  const productRows = await prisma.product.findMany({
+    include: { shades: true },
+    orderBy: [{ featured: "desc" }, { name: "asc" }],
+  })
+  const contentRow = await prisma.siteContent.findUnique({ where: { id: "default" } })
 
   return {
     shop: shopRow ? mapShop(shopRow) : defaultShop,
@@ -284,8 +353,4 @@ const getCachedStorefront = unstable_cache(fetchStorefrontFromDb, ["storefront"]
 
 async function loadStorefront() {
   return queryCatalog(emptyStorefront, getCachedStorefront)
-}
-
-async function loadFreshStorefront() {
-  return queryCatalog(emptyStorefront, fetchStorefrontFromDb)
 }

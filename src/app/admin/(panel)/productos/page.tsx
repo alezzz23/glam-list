@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 
 import { DeleteProductButton } from "@/components/admin/delete-product-button"
@@ -16,7 +15,8 @@ export default async function AdminProductsPage({
 }) {
   const params = await searchParams
   const q = typeof params.q === "string" ? params.q.trim().toLowerCase() : ""
-  const [products, categories] = await Promise.all([getAdminProducts(), getAdminCategories()])
+  const products = await getAdminProducts()
+  const categories = await getAdminCategories()
   const names = new Map(categories.map((category) => [category.id, category.name]))
   const filtered = q
     ? products.filter(
@@ -68,7 +68,8 @@ export default async function AdminProductsPage({
               <tr key={product.id} className="border-b border-border/70 last:border-0">
                 <td className="px-4 py-3">
                   <Link href={`/admin/productos/${product.id}`} className="flex items-center gap-3">
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={product.image}
                       alt=""
                       width={48}

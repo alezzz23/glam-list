@@ -9,11 +9,9 @@ export const metadata = {
 }
 
 export default async function AdminHomePage() {
-  const [products, categories, shop] = await Promise.all([
-    getAdminProducts(),
-    getAdminCategories(),
-    getAdminShop(),
-  ])
+  const shop = await getAdminShop()
+  const products = await getAdminProducts()
+  const categories = await getAdminCategories()
   const soldOut = products.filter((product) => product.stock <= 0)
   const low = products.filter((product) => product.stock > 0 && product.stock <= 4)
   const featured = products.filter((product) => product.featured)
