@@ -5,7 +5,7 @@ import { MessageCircleIcon, ShoppingBagIcon } from "lucide-react"
 
 import { QuantityInput } from "@/components/quantity-input"
 import { useCart } from "@/components/cart-provider"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { formatPrice, formatStock } from "@/lib/format"
 import type { Product } from "@/lib/products"
 import { productInquiryText, whatsappUrl } from "@/lib/whatsapp"
@@ -59,29 +59,24 @@ export function ProductPurchase({ product }: { product: Product }) {
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Button
-          className="h-11 flex-1 rounded-full"
+        <button
+          type="button"
+          className={cn(buttonVariants(), "h-11 flex-1 rounded-full")}
           disabled={soldOut}
           onClick={() => addItem(product.id, quantity, shadeId)}
         >
-          <ShoppingBagIcon data-icon="inline-start" />
+          <ShoppingBagIcon className="size-4" />
           {soldOut ? "Agotado" : `Agregar · ${formatPrice(product.price * quantity)}`}
-        </Button>
-        <Button
-          nativeButton={false}
-          render={
-            <a
-              href={whatsappUrl(productInquiryText(product.name, selectedShade?.name))}
-              target="_blank"
-              rel="noreferrer"
-            />
-          }
-          variant="outline"
-          className="h-11 rounded-full"
+        </button>
+        <a
+          href={whatsappUrl(productInquiryText(product.name, selectedShade?.name))}
+          target="_blank"
+          rel="noreferrer"
+          className={cn(buttonVariants({ variant: "outline" }), "h-11 rounded-full")}
         >
-          <MessageCircleIcon data-icon="inline-start" />
+          <MessageCircleIcon className="size-4" />
           Consultar
-        </Button>
+        </a>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { ShoppingBagIcon } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { useCart } from "@/components/cart-provider"
 import { formatPrice } from "@/lib/format"
 import type { Product } from "@/lib/products"
@@ -71,31 +71,29 @@ export function ProductCard({
             ) : null}
           </div>
           {soldOut ? (
-            <Button
-              nativeButton={false}
-              render={<Link href={`/producto/${product.slug}`} />}
-              variant="outline"
-              className="rounded-full"
+            <Link
+              href={`/producto/${product.slug}`}
+              className={cn(buttonVariants({ variant: "outline" }), "rounded-full")}
             >
               Avisarme
-            </Button>
+            </Link>
           ) : product.shades?.length ? (
-            <Button
-              nativeButton={false}
-              render={<Link href={`/producto/${product.slug}`} />}
-              className="rounded-full"
+            <Link
+              href={`/producto/${product.slug}`}
+              className={cn(buttonVariants(), "rounded-full")}
             >
               Elegir tono
-            </Button>
+            </Link>
           ) : (
-            <Button
-              className="h-10 rounded-full px-3"
+            <button
+              type="button"
+              className={cn(buttonVariants(), "h-10 rounded-full px-3")}
               onClick={() => addItem(product.id)}
               aria-label={`Agregar ${product.name} al carrito`}
             >
-              <ShoppingBagIcon data-icon="inline-start" />
+              <ShoppingBagIcon className="size-4" />
               Agregar
-            </Button>
+            </button>
           )}
         </div>
       </div>

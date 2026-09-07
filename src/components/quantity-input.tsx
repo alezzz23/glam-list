@@ -2,7 +2,6 @@
 
 import { MinusIcon, PlusIcon } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export function QuantityInput({
@@ -25,29 +24,25 @@ export function QuantityInput({
         className
       )}
     >
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="icon-sm"
-        className="size-10 rounded-full"
+        className="grid size-10 place-items-center rounded-full text-foreground hover:bg-muted disabled:opacity-40"
         disabled={value <= min}
         onClick={() => onChange(Math.max(min, value - 1))}
         aria-label="Quitar una unidad"
       >
-        <MinusIcon />
-      </Button>
+        <MinusIcon className="size-4" />
+      </button>
       <span className="min-w-8 text-center text-sm font-medium tabular-nums">{value}</span>
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="icon-sm"
-        className="size-10 rounded-full"
+        className="grid size-10 place-items-center rounded-full text-foreground hover:bg-muted disabled:opacity-40"
         disabled={value >= max}
         onClick={() => onChange(Math.min(max, value + 1))}
         aria-label="Agregar una unidad"
       >
-        <PlusIcon />
-      </Button>
+        <PlusIcon className="size-4" />
+      </button>
     </div>
   )
 }

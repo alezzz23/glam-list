@@ -7,11 +7,12 @@ import { MessageCircleIcon, Trash2Icon } from "lucide-react"
 
 import { QuantityInput } from "@/components/quantity-input"
 import { useCart } from "@/components/cart-provider"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { formatPrice } from "@/lib/format"
 import { getProductById } from "@/lib/products"
+import { cn } from "@/lib/utils"
 import { orderText, whatsappUrl } from "@/lib/whatsapp"
 
 export function CheckoutForm() {
@@ -28,13 +29,12 @@ export function CheckoutForm() {
           Aún no hay productos. Recorre el catálogo, agrega tus favoritos y aquí
           armamos el mensaje para WhatsApp.
         </p>
-        <Button
-          nativeButton={false}
-          render={<Link href="/catalogo" />}
-          className="mt-8 h-11 rounded-full"
+        <Link
+          href="/catalogo"
+          className={cn(buttonVariants(), "mt-8 inline-flex h-11 rounded-full px-5")}
         >
           Ir al catálogo
-        </Button>
+        </Link>
       </div>
     )
   }
@@ -79,14 +79,14 @@ export function CheckoutForm() {
                       max={product.stock}
                       onChange={(value) => setQuantity(line.key, value)}
                     />
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    <button
+                      type="button"
+                      className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
                       aria-label={`Quitar ${product.name}`}
                       onClick={() => removeItem(line.key)}
                     >
                       <Trash2Icon />
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </li>
@@ -136,16 +136,15 @@ export function CheckoutForm() {
           <span className="text-muted-foreground">Total</span>
           <span className="font-heading text-2xl">{formatPrice(subtotal)}</span>
         </div>
-        <Button
-          nativeButton={false}
-          render={
-            <a href={whatsappUrl(message)} target="_blank" rel="noreferrer" />
-          }
-          className="h-12 w-full rounded-full"
+        <a
+          href={whatsappUrl(message)}
+          target="_blank"
+          rel="noreferrer"
+          className={cn(buttonVariants(), "flex h-12 w-full rounded-full")}
         >
-          <MessageCircleIcon data-icon="inline-start" />
+          <MessageCircleIcon className="size-4" />
           Enviar pedido por WhatsApp
-        </Button>
+        </a>
       </aside>
     </div>
   )
