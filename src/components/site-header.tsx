@@ -7,6 +7,7 @@ import { useState } from "react"
 import { MenuIcon, ShoppingBagIcon, XIcon } from "lucide-react"
 
 import { CartSheet } from "@/components/cart-sheet"
+import { CatalogLink } from "@/components/catalog-link"
 import { Drawer } from "@/components/drawer"
 import { useCart } from "@/components/cart-provider"
 import { buttonVariants } from "@/components/ui/button"
@@ -21,7 +22,6 @@ function isNavActive(href: string, pathname: string) {
 
 const links = [
   { href: "/", label: "Catálogo" },
-  { href: "/?categoria=skincare", label: "Skincare" },
   { href: "/nosotros", label: "Nosotros" },
 ]
 
@@ -59,14 +59,14 @@ export function SiteHeader() {
           </div>
           <nav className="flex flex-col gap-1 px-4">
             {links.map((link) => (
-              <Link
+              <CatalogLink
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
                 className="rounded-2xl px-3 py-3 text-base hover:bg-secondary"
               >
                 {link.label}
-              </Link>
+              </CatalogLink>
             ))}
             <Link
               href="/carrito"
@@ -95,7 +95,7 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
-            <Link
+            <CatalogLink
               key={link.href}
               href={link.href}
               className={cn(
@@ -106,7 +106,7 @@ export function SiteHeader() {
               )}
             >
               {link.label}
-            </Link>
+            </CatalogLink>
           ))}
         </nav>
 

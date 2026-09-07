@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 
+import { CatalogLink } from "@/components/catalog-link"
 import { shop } from "@/lib/shop"
 import { whatsappUrl } from "@/lib/whatsapp"
 
@@ -38,9 +39,9 @@ export function SiteFooter() {
           <ul className="mt-3 space-y-2 text-sm">
             {footerLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="hover:text-primary">
+                <CatalogLink href={link.href} className="hover:text-primary">
                   {link.label}
-                </Link>
+                </CatalogLink>
               </li>
             ))}
           </ul>

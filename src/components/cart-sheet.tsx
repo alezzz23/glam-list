@@ -26,7 +26,7 @@ export function CartSheet({ children }: { children: ReactElement<{ onClick?: (ev
           setOpen(true)
         },
       })}
-      <Drawer open={open} onOpenChange={setOpen} side="right">
+      <Drawer open={open} onOpenChange={setOpen} side="right" mode="dock">
         <div className="flex items-start justify-between gap-3 p-4">
           <div>
             <p className="font-heading text-2xl">Tu bolsa</p>

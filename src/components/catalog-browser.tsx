@@ -1,10 +1,10 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
+import { usePathname, useSearchParams } from "next/navigation"
 import { SearchIcon } from "lucide-react"
 
+import { CatalogLink, CATALOG_URL_EVENT, replaceCatalogUrl } from "@/components/catalog-link"
 import { ProductCard } from "@/components/product-card"
 import { Input } from "@/components/ui/input"
 import { foldText } from "@/lib/format"
@@ -27,12 +27,26 @@ export function CatalogBrowser({
   products: Product[]
   categories: Category[]
 }) {
-  const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const categoria = (searchParams.get("categoria") ?? "todos") as CategoryId | "todos"
+  const [categoria, setCategoria] = useState<CategoryId | "todos">(
+    () => (searchParams.get("categoria") ?? "todos") as CategoryId | "todos"
+  )
   const [query, setQuery] = useState(searchParams.get("q") ?? "")
   const [sort, setSort] = useState<SortId>("featured")
+
+  useEffect(() => {
+    function syncFromUrl() {
+      const params = new URLSearchParams(window.location.search)
+      setCategoria((params.get("categoria") ?? "todos") as CategoryId | "todos")
+    }
+    window.addEventListener(CATALOG_URL_EVENT, syncFromUrl)
+    return () => window.removeEventListener(CATALOG_URL_EVENT, syncFromUrl)
+  }, [])
+
+  useEffect(() => {
+    setCategoria((searchParams.get("categoria") ?? "todos") as CategoryId | "todos")
+  }, [searchParams])
 
   function hrefFor(next: string) {
     const params = new URLSearchParams(searchParams.toString())
@@ -42,8 +56,13 @@ export function CatalogBrowser({
     return qs ? `${pathname}?${qs}` : pathname
   }
 
-  function setCategoria(next: string) {
-    router.replace(hrefFor(next), { scroll: false })
+  function selectCategoria(next: string) {
+    setCategoria(next as CategoryId | "todos")
+    const params = new URLSearchParams(window.location.search)
+    if (next === "todos") params.delete("categoria")
+    else params.set("categoria", next)
+    const qs = params.toString()
+    replaceCatalogUrl(qs ? `${pathname}?${qs}` : pathname)
   }
 
   const filtered = useMemo(() => {
@@ -124,7 +143,7 @@ export function CatalogBrowser({
             className="mt-6 text-sm underline underline-offset-4"
             onClick={() => {
               setQuery("")
-              setCategoria("todos")
+              selectCategoria("todos")
             }}
           >
             Ver todo el catálogo
@@ -156,15 +175,15 @@ function FilterChip({
   children: string
 }) {
   return (
-    <Link
+    <CatalogLink
       href={href}
-      scroll={false}
+      aria-current={active ? "true" : undefined}
       className={cn(
         "shrink-0 rounded-full px-4 py-2 text-sm transition-colors",
         active ? "bg-primary text-primary-foreground" : "bg-card ring-1 ring-foreground/10 hover:bg-secondary"
       )}
     >
       {children}
-    </Link>
+    </CatalogLink>
   )
 }

@@ -1,6 +1,7 @@
 import "server-only"
 
 import type { Prisma } from "@prisma/client"
+import { unstable_cache } from "next/cache"
 import { connection } from "next/server"
 import { cache } from "react"
 
@@ -100,47 +101,25 @@ function mapShop(row: {
 }
 
 export const getShop = cache(async (): Promise<Shop> => {
-  return queryCatalog(defaultShop, async () => {
-    const row = await prisma.shopSettings.findUnique({ where: { id: "default" } })
-    return row ? mapShop(row) : defaultShop
-  })
+  return (await loadStorefront()).shop
 })
 
 export const getCategories = cache(async (): Promise<Category[]> => {
-  return queryCatalog([], async () => {
-    const rows = await prisma.category.findMany({ orderBy: { sortOrder: "asc" } })
-    return rows.map(mapCategory)
-  })
+  return (await loadStorefront()).categories
 })
 
 export const getProducts = cache(async (): Promise<Product[]> => {
-  return queryCatalog([], async () => {
-    const rows = await prisma.product.findMany({
-      include: { shades: true },
-      orderBy: [{ featured: "desc" }, { name: "asc" }],
-    })
-    return rows.map(mapProduct)
-  })
+  return (await loadStorefront()).products
 })
 
 export const getProductBySlug = cache(async (slug: string) => {
-  return queryCatalog(undefined, async () => {
-    const row = await prisma.product.findUnique({
-      where: { slug },
-      include: { shades: true },
-    })
-    return row ? mapProduct(row) : undefined
-  })
+  const products = await getProducts()
+  return products.find((product) => product.slug === slug)
 })
 
 export const getProductRecord = cache(async (id: string) => {
-  return queryCatalog(undefined, async () => {
-    const row = await prisma.product.findUnique({
-      where: { id },
-      include: { shades: true },
-    })
-    return row ? mapProduct(row) : undefined
-  })
+  const products = await getProducts()
+  return products.find((product) => product.id === id)
 })
 
 export async function getFeaturedProducts(limit = 4) {
@@ -233,27 +212,49 @@ function parseFaqs(value: unknown): FaqItem[] {
 }
 
 export const getSiteContent = cache(async (): Promise<SiteContent> => {
-  const fallback = {
+  return (await loadStorefront()).content
+})
+
+export const getStorefront = cache(async () => loadStorefront())
+
+const emptyStorefront = {
+  shop: defaultShop,
+  categories: [] as Category[],
+  products: [] as Product[],
+  content: {
     home: defaultHome,
     about: defaultAbout,
     faqs: defaultFaqs,
-  }
-  return queryCatalog(fallback, async () => {
-    const row = await prisma.siteContent.findUnique({ where: { id: "default" } })
-    return {
-      home: parseHome(row?.home),
-      about: parseAbout(row?.about),
-      faqs: parseFaqs(row?.faqs),
-    }
-  })
-})
+  },
+}
 
-export const getStorefront = cache(async () => {
-  const [shop, categories, products, content] = await Promise.all([
-    getShop(),
-    getCategories(),
-    getProducts(),
-    getSiteContent(),
-  ])
-  return { shop, categories, products, content }
-})
+const getCachedStorefront = unstable_cache(
+  async () => {
+    const [shopRow, categoryRows, productRows, contentRow] = await Promise.all([
+      prisma.shopSettings.findUnique({ where: { id: "default" } }),
+      prisma.category.findMany({ orderBy: { sortOrder: "asc" } }),
+      prisma.product.findMany({
+        include: { shades: true },
+        orderBy: [{ featured: "desc" }, { name: "asc" }],
+      }),
+      prisma.siteContent.findUnique({ where: { id: "default" } }),
+    ])
+
+    return {
+      shop: shopRow ? mapShop(shopRow) : defaultShop,
+      categories: categoryRows.map(mapCategory),
+      products: productRows.map(mapProduct),
+      content: {
+        home: parseHome(contentRow?.home),
+        about: parseAbout(contentRow?.about),
+        faqs: parseFaqs(contentRow?.faqs),
+      },
+    }
+  },
+  ["storefront"],
+  { tags: ["storefront"], revalidate: 60 }
+)
+
+async function loadStorefront() {
+  return queryCatalog(emptyStorefront, getCachedStorefront)
+}
