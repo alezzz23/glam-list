@@ -29,7 +29,7 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <p className="text-sm text-muted-foreground">
-        <Link href="/catalogo" className="hover:text-foreground">
+        <Link href="/" className="hover:text-foreground">
           Catálogo
         </Link>
         <span className="mx-2">/</span>

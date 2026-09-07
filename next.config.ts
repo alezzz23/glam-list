@@ -8,6 +8,15 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/catalogo",
+        destination: "/",
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig

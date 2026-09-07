@@ -51,7 +51,7 @@ export function CartSheet({ children }: { children: ReactElement<{ onClick?: (ev
               Agrega un sérum, un labial o un kit y cierra el pedido por WhatsApp.
             </p>
             <Link
-              href="/catalogo"
+              href="/"
               onClick={() => setOpen(false)}
               className={cn(buttonVariants(), "h-10 rounded-full px-4")}
             >

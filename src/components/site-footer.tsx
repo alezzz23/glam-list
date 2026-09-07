@@ -5,8 +5,8 @@ import { shop } from "@/lib/shop"
 import { whatsappUrl } from "@/lib/whatsapp"
 
 const footerLinks = [
-  { href: "/catalogo", label: "Catálogo completo" },
-  { href: "/catalogo?categoria=skincare", label: "Skincare" },
+  { href: "/", label: "Catálogo" },
+  { href: "/?categoria=skincare", label: "Skincare" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/carrito", label: "Tu bolsa" },
 ]

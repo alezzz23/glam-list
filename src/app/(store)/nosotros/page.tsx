@@ -57,7 +57,7 @@ export default async function NosotrosPage() {
           nativeButton={false}
           variant="outline"
           className="h-11 rounded-full px-6"
-          render={<Link href="/catalogo" />}
+          render={<Link href="/" />}
         >
           Ver catálogo
         </Button>

@@ -3,7 +3,7 @@
 import { requireAdmin } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { revalidateStorefront } from "@/lib/revalidate"
-import type { AboutContent, FaqItem, HomeContent } from "@/lib/types"
+import type { AboutContent, FaqItem } from "@/lib/types"
 
 export type SiteState = { error?: string; success?: string }
 
@@ -16,14 +16,6 @@ function lines(formData: FormData, key: string) {
     .split("\n")
     .map((item) => item.trim())
     .filter(Boolean)
-}
-
-function readPairs(formData: FormData, titleKey: string, textKey: string) {
-  const titles = formData.getAll(titleKey).map((item) => String(item).trim())
-  const texts = formData.getAll(textKey).map((item) => String(item).trim())
-  return titles
-    .map((title, index) => ({ title, text: texts[index] ?? "" }))
-    .filter((item) => item.title || item.text)
 }
 
 export async function updateShopAction(_prev: SiteState, formData: FormData): Promise<SiteState> {
@@ -62,29 +54,6 @@ export async function updateShopAction(_prev: SiteState, formData: FormData): Pr
 export async function updateContentAction(_prev: SiteState, formData: FormData): Promise<SiteState> {
   await requireAdmin()
 
-  const home: HomeContent = {
-    heroKicker: readString(formData, "heroKicker"),
-    heroTitle: readString(formData, "heroTitle"),
-    heroSubtitle: readString(formData, "heroSubtitle"),
-    heroImage: readString(formData, "heroImage"),
-    heroCaptionTitle: readString(formData, "heroCaptionTitle"),
-    heroCaptionText: readString(formData, "heroCaptionText"),
-    highlights: readPairs(formData, "highlightTitle", "highlightText"),
-    collectionsEyebrow: readString(formData, "collectionsEyebrow"),
-    collectionsTitle: readString(formData, "collectionsTitle"),
-    featuredEyebrow: readString(formData, "featuredEyebrow"),
-    featuredTitle: readString(formData, "featuredTitle"),
-    houseEyebrow: readString(formData, "houseEyebrow"),
-    houseTitle: readString(formData, "houseTitle"),
-    houseImage: readString(formData, "houseImage"),
-    houseParagraphs: lines(formData, "houseParagraphs"),
-    bestsellersTitle: readString(formData, "bestsellersTitle"),
-    howEyebrow: readString(formData, "howEyebrow"),
-    howTitle: readString(formData, "howTitle"),
-    howSteps: readPairs(formData, "howTitleItem", "howTextItem"),
-    howCta: readString(formData, "howCta"),
-  }
-
   const about: AboutContent = {
     eyebrow: readString(formData, "aboutEyebrow"),
     title: readString(formData, "aboutTitle"),
@@ -99,7 +68,7 @@ export async function updateContentAction(_prev: SiteState, formData: FormData):
 
   await prisma.siteContent.update({
     where: { id: "default" },
-    data: { home, about, faqs },
+    data: { about, faqs },
   })
 
   revalidateStorefront()

@@ -13,10 +13,15 @@ import { buttonVariants } from "@/components/ui/button"
 import { shop } from "@/lib/shop"
 import { cn } from "@/lib/utils"
 
+function isNavActive(href: string, pathname: string) {
+  if (href.startsWith("/?")) return false
+  if (href === "/") return pathname === "/"
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
 const links = [
-  { href: "/", label: "Inicio" },
-  { href: "/catalogo", label: "Catálogo" },
-  { href: "/catalogo?categoria=skincare", label: "Skincare" },
+  { href: "/", label: "Catálogo" },
+  { href: "/?categoria=skincare", label: "Skincare" },
   { href: "/nosotros", label: "Nosotros" },
 ]
 
@@ -95,9 +100,7 @@ export function SiteHeader() {
               href={link.href}
               className={cn(
                 "rounded-full px-3.5 py-2 text-sm transition-colors hover:bg-secondary",
-                (link.href === "/" && pathname === "/") ||
-                  (link.href === "/catalogo" && pathname.startsWith("/catalogo")) ||
-                  (link.href !== "/" && link.href !== "/catalogo" && pathname.startsWith(link.href))
+                isNavActive(link.href, pathname)
                   ? "bg-secondary"
                   : ""
               )}

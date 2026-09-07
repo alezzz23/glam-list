@@ -18,12 +18,23 @@ export async function loginAction(_prev: AuthState, formData: FormData): Promise
     return { error: "Escribe correo y contraseña." }
   }
 
-  const user = await prisma.adminUser.findUnique({ where: { email } })
-  if (!user || !(await compare(password, user.passwordHash))) {
-    return { error: "Correo o contraseña incorrectos." }
+  if (!process.env.DATABASE_URL || !process.env.AUTH_SECRET) {
+    return { error: "Faltan variables de entorno en producción (DATABASE_URL / AUTH_SECRET)." }
   }
 
-  await setSessionCookie({ id: user.id, email: user.email })
+  let session: { id: string; email: string }
+  try {
+    const user = await prisma.adminUser.findUnique({ where: { email } })
+    if (!user || !(await compare(password, user.passwordHash))) {
+      return { error: "Correo o contraseña incorrectos." }
+    }
+    session = { id: user.id, email: user.email }
+    await setSessionCookie(session)
+  } catch (error) {
+    console.error("loginAction failed", error)
+    return { error: "No se pudo iniciar sesión. Revisa la conexión a la base de datos." }
+  }
+
   redirect("/admin")
 }
 

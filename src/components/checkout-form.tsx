@@ -30,7 +30,7 @@ export function CheckoutForm() {
           armamos el mensaje para WhatsApp.
         </p>
         <Link
-          href="/catalogo"
+          href="/"
           className={cn(buttonVariants(), "mt-8 inline-flex h-11 rounded-full px-5")}
         >
           Ir al catálogo

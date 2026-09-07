@@ -13,7 +13,12 @@ async function queryCatalog<T>(fallback: T, query: () => Promise<T>): Promise<T>
   // Vercel prerenders /_not-found and other static routes without DATABASE_URL.
   await connection()
   if (!process.env.DATABASE_URL) return fallback
-  return query()
+  try {
+    return await query()
+  } catch (error) {
+    console.error("Catalog query failed", error)
+    return fallback
+  }
 }
 
 type ProductRecord = Prisma.ProductGetPayload<{ include: { shades: true } }>

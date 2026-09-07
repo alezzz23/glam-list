@@ -2,7 +2,6 @@ import { revalidatePath } from "next/cache"
 
 export function revalidateStorefront(slug?: string) {
   revalidatePath("/", "layout")
-  revalidatePath("/catalogo")
   revalidatePath("/nosotros")
   revalidatePath("/carrito")
   revalidatePath("/admin")

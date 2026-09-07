@@ -25,7 +25,7 @@ export function CategoryCreateForm() {
         <Field label="Nombre">
           <Input name="name" required className="h-10 rounded-2xl" />
         </Field>
-        <Field label="Identificador" hint="Opcional. Se usa en /catalogo?categoria=">
+        <Field label="Identificador" hint="Opcional. Se usa en /?categoria=">
           <Input name="id" className="h-10 rounded-2xl" placeholder="skincare" />
         </Field>
         <Field label="Orden">
