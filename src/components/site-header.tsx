@@ -23,8 +23,7 @@ const links = [
   { href: "/", label: "Inicio" },
   { href: "/catalogo", label: "Catálogo" },
   { href: "/catalogo?categoria=skincare", label: "Skincare" },
-  { href: "/catalogo?categoria=rostro", label: "Maquillaje" },
-  { href: "/carrito", label: "Carrito" },
+  { href: "/nosotros", label: "Nosotros" },
 ]
 
 export function SiteHeader() {
@@ -93,7 +92,8 @@ export function SiteHeader() {
               className={cn(
                 "rounded-full px-3.5 py-2 text-sm transition-colors hover:bg-secondary",
                 (link.href === "/" && pathname === "/") ||
-                  (link.href === "/catalogo" && pathname.startsWith("/catalogo"))
+                  (link.href === "/catalogo" && pathname.startsWith("/catalogo")) ||
+                  (link.href !== "/" && link.href !== "/catalogo" && pathname.startsWith(link.href))
                   ? "bg-secondary"
                   : ""
               )}

@@ -8,6 +8,7 @@ export const shop = {
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "584120000000",
   instagram: "bloomshop.ve",
   email: "hola@bloomshop.ve",
-  location: "Venezuela",
+  location: "Caracas, Venezuela",
+  hours: "Lunes a sábado, 9:00 a.m. – 6:00 p.m.",
   currencyLabel: "USD",
 } as const

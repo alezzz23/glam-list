@@ -33,6 +33,7 @@ Usa el código de país, sin `+` ni espacios (ejemplo Venezuela: `58` + número)
 - Ficha de producto con tonos, stock y consulta por WhatsApp
 - Bolsa persistente en el navegador
 - Checkout que arma el mensaje de pedido
+- Página Nosotros con preguntas frecuentes
 - Identidad visual de Bloom Shop.VE (crema, rosa pétalo, lavanda y serif)
 
 Los productos de este repo son de muestra para que el catálogo se vea completo. Cámbialos en `src/lib/products.ts` y las fotos en `public/images`. El logo está en `public/logo.jpg`.

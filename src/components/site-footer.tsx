@@ -7,7 +7,7 @@ import { whatsappUrl } from "@/lib/whatsapp"
 const footerLinks = [
   { href: "/catalogo", label: "Catálogo completo" },
   { href: "/catalogo?categoria=skincare", label: "Skincare" },
-  { href: "/catalogo?categoria=labios", label: "Labios" },
+  { href: "/nosotros", label: "Nosotros" },
   { href: "/carrito", label: "Tu bolsa" },
 ]
 

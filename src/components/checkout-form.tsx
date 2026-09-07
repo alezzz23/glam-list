@@ -9,6 +9,7 @@ import { QuantityInput } from "@/components/quantity-input"
 import { useCart } from "@/components/cart-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { formatPrice } from "@/lib/format"
 import { getProductById } from "@/lib/products"
 import { orderText, whatsappUrl } from "@/lib/whatsapp"
@@ -123,12 +124,12 @@ export function CheckoutForm() {
         </label>
         <label className="block space-y-1.5 text-sm">
           <span>Notas</span>
-          <textarea
+          <Textarea
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             placeholder="Tono, horario de delivery, si es regalo…"
             rows={3}
-            className="w-full rounded-2xl border border-input bg-transparent px-2.5 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="rounded-2xl"
           />
         </label>
         <div className="flex items-center justify-between border-t border-border pt-4">
