@@ -1,99 +1,50 @@
-"use client";
-
-import { Plus, Star } from "lucide-react";
-import { toast } from "sonner";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ProductIllustration } from "@/components/product-illustration";
-import { useCart } from "@/components/cart-provider";
-import { CATEGORY_LABELS, type Product } from "@/data/products";
-import { formatPrice } from "@/lib/format";
+import { ProductVisual } from "@/components/product-visual";
+import { QuickAdd } from "@/components/quick-add";
+import { formatUsd, stockLabel } from "@/lib/format";
+import { CATEGORY_LABELS, type Product } from "@/lib/products";
 
-const badgeStyles: Record<NonNullable<Product["badge"]>, string> = {
-  Nuevo: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  "Más vendido": "bg-amber-100 text-amber-900 border-amber-200",
-  Oferta: "bg-rose-100 text-rose-800 border-rose-200",
-};
-
-export function ProductCard({
-  product,
-  onSelect,
-}: {
-  product: Product;
-  onSelect: (product: Product) => void;
-}) {
-  const { add, setOpen } = useCart();
-
-  const handleAdd = () => {
-    add(product.id);
-    toast.success(`${product.name} agregado al carrito`, {
-      action: { label: "Ver carrito", onClick: () => setOpen(true) },
-    });
-  };
+export function ProductCard({ product }: { product: Product }) {
+  const soldOut = product.stock <= 0;
 
   return (
-    <Card className="group overflow-hidden rounded-3xl border-border/80 py-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10">
-      <button
-        type="button"
-        onClick={() => onSelect(product)}
-        className="relative block w-full cursor-pointer text-left"
-        aria-label={`Ver detalles de ${product.name}`}
-      >
-        <ProductIllustration
-          product={product}
-          className="aspect-square w-full transition-transform duration-500 group-hover:scale-[1.04]"
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/8 transition-shadow hover:shadow-[0_12px_40px_-18px_rgba(44,36,30,0.28)]">
+      <Link href={`/producto/${product.slug}`} className="relative block">
+        <ProductVisual
+          vessel={product.vessel}
+          colors={product.colors}
+          className="aspect-[4/5] w-full"
         />
-        {product.badge && (
-          <Badge
-            variant="outline"
-            className={`absolute top-3 left-3 border ${badgeStyles[product.badge]}`}
-          >
-            {product.badge}
-          </Badge>
-        )}
-      </button>
-
-      <CardContent className="flex flex-col gap-3 p-5 pt-4">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+          {product.isNew && (
+            <Badge className="bg-[#A78BA5] text-white">Nuevo</Badge>
+          )}
+          {soldOut && <Badge variant="secondary">Agotado</Badge>}
+          {!soldOut && product.stock <= 8 && (
+            <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
+              {stockLabel(product.stock)}
+            </Badge>
+          )}
+        </div>
+      </Link>
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div className="flex-1">
+          <p className="text-[11px] font-medium tracking-[0.16em] text-[#A78BA5] uppercase">
             {CATEGORY_LABELS[product.category]}
-          </span>
-          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <Star className="size-3.5 fill-amber-400 text-amber-400" />
-            {product.rating.toFixed(1)}
-            <span className="text-muted-foreground/70">({product.reviews})</span>
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => onSelect(product)}
-          className="cursor-pointer text-left"
-        >
-          <h3 className="font-display text-lg leading-snug font-semibold">
-            {product.name}
-          </h3>
-          <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
-            {product.tagline}
           </p>
-        </button>
-
-        <div className="mt-1 flex items-center justify-between gap-3">
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold">{formatPrice(product.price)}</span>
-            {product.originalPrice && (
-              <span className="text-sm text-muted-foreground line-through">
-                {formatPrice(product.originalPrice)}
-              </span>
-            )}
-          </div>
-          <Button size="sm" className="rounded-full" onClick={handleAdd}>
-            <Plus className="size-4" />
-            Agregar
-          </Button>
+          <Link href={`/producto/${product.slug}`} className="mt-1 block">
+            <h3 className="font-heading text-lg leading-snug text-foreground group-hover:underline group-hover:decoration-[#E8B8BC] group-hover:underline-offset-4">
+              {product.name}
+            </h3>
+          </Link>
+          <p className="mt-1 text-sm text-muted-foreground">{product.tagline}</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex items-end justify-between gap-3">
+          <p className="font-heading text-xl">{formatUsd(product.price)}</p>
+          <QuickAdd product={product} />
+        </div>
+      </div>
+    </article>
   );
 }

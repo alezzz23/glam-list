@@ -1,7 +1,9 @@
 "use client";
 
-import { MessageCircle, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -10,157 +12,117 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ProductIllustration } from "@/components/product-illustration";
-import { useCart } from "@/components/cart-provider";
-import { products, type Product } from "@/data/products";
-import { formatPrice } from "@/lib/format";
+import { ProductVisual } from "@/components/product-visual";
+import { shadeForLine, useCart } from "@/lib/cart-context";
+import { formatUsd } from "@/lib/format";
+import { getProductById } from "@/lib/products";
 
-export function CartSheet() {
-  const {
-    items,
-    isOpen,
-    setOpen,
-    setQuantity,
-    remove,
-    clear,
-    subtotal,
-    checkoutUrl,
-  } = useCart();
+type Props = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
 
-  const detailed = items
-    .map((item) => ({
-      item,
-      product: products.find((p) => p.id === item.productId),
-    }))
-    .filter(
-      (entry): entry is { item: (typeof items)[number]; product: Product } =>
-        entry.product !== undefined
-    );
+export function CartSheet({ open, onOpenChange }: Props) {
+  const { lines, setQuantity, removeItem, subtotal, itemCount } = useCart();
 
   return (
-    <Sheet open={isOpen} onOpenChange={setOpen}>
-      <SheetContent className="flex w-full flex-col sm:max-w-md" side="right">
-        <SheetHeader>
-          <SheetTitle className="font-display text-xl">Tu carrito</SheetTitle>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="bg-[#FBF7F2] p-0 sm:max-w-md">
+        <SheetHeader className="border-b border-foreground/8">
+          <SheetTitle className="font-heading text-xl">Tu pedido</SheetTitle>
           <SheetDescription>
-            {detailed.length === 0
-              ? "Aún no agregas productos."
-              : "Revisa tu pedido y finalízalo por WhatsApp."}
+            {itemCount === 0
+              ? "Aún no has elegido productos."
+              : `${itemCount} ${itemCount === 1 ? "producto" : "productos"} listos para WhatsApp.`}
           </SheetDescription>
         </SheetHeader>
 
-        {detailed.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
-            <span className="flex size-16 items-center justify-center rounded-full bg-secondary">
-              <ShoppingBag className="size-7 text-secondary-foreground" />
-            </span>
-            <div>
-              <p className="font-display text-lg font-semibold">
-                Tu carrito está vacío
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Explora el catálogo y agrega tus favoritos para armar tu pedido.
-              </p>
-            </div>
+        {lines.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+            <p className="text-muted-foreground">El catálogo te está esperando.</p>
             <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => setOpen(false)}
+              render={<Link href="/catalogo" onClick={() => onOpenChange(false)} />}
             >
-              Seguir explorando
+              Ver catálogo
             </Button>
           </div>
         ) : (
-          <>
-            <div className="flex-1 space-y-4 overflow-y-auto px-4">
-              {detailed.map(({ item, product }) => (
-                <div
-                  key={item.productId}
-                  className="flex gap-3 rounded-2xl border border-border/70 bg-card p-3"
-                >
-                  <div className="size-20 shrink-0 overflow-hidden rounded-xl">
-                    <ProductIllustration
-                      product={product}
-                      className="size-full"
+          <ScrollArea className="flex-1 px-4">
+            <ul className="flex flex-col gap-4 py-2">
+              {lines.map((line) => {
+                const product = getProductById(line.productId);
+                if (!product) return null;
+                const shade = shadeForLine(line.productId, line.shadeId);
+                return (
+                  <li
+                    key={`${line.productId}-${line.shadeId ?? "default"}`}
+                    className="flex gap-3"
+                  >
+                    <ProductVisual
+                      vessel={product.vessel}
+                      colors={product.colors}
+                      className="size-16 shrink-0 overflow-hidden rounded-xl"
                     />
-                  </div>
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="truncate text-sm font-semibold">
-                        {product.name}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => remove(item.productId)}
-                        className="cursor-pointer text-muted-foreground transition-colors hover:text-destructive"
-                        aria-label={`Quitar ${product.name}`}
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {formatPrice(product.price)} c/u
-                    </p>
-                    <div className="mt-auto flex items-center justify-between pt-2">
-                      <div className="flex items-center gap-1 rounded-full border border-border p-0.5">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium">{product.name}</p>
+                      {shade && (
+                        <p className="text-xs text-muted-foreground">{shade.name}</p>
+                      )}
+                      <p className="mt-0.5 text-sm">{formatUsd(product.price)}</p>
+                      <div className="mt-2 flex items-center gap-2">
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-6 rounded-full"
+                          variant="outline"
+                          size="icon-xs"
+                          aria-label="Quitar uno"
                           onClick={() =>
-                            setQuantity(item.productId, item.quantity - 1)
+                            setQuantity(line.productId, line.shadeId, line.quantity - 1)
                           }
-                          aria-label="Disminuir cantidad"
                         >
-                          <Minus className="size-3" />
+                          <MinusIcon />
                         </Button>
-                        <span className="w-6 text-center text-xs font-semibold tabular-nums">
-                          {item.quantity}
-                        </span>
+                        <span className="w-5 text-center text-sm">{line.quantity}</span>
+                        <Button
+                          variant="outline"
+                          size="icon-xs"
+                          aria-label="Agregar uno"
+                          onClick={() =>
+                            setQuantity(line.productId, line.shadeId, line.quantity + 1)
+                          }
+                        >
+                          <PlusIcon />
+                        </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
-                          className="size-6 rounded-full"
-                          onClick={() =>
-                            setQuantity(item.productId, item.quantity + 1)
-                          }
-                          aria-label="Aumentar cantidad"
+                          size="icon-xs"
+                          aria-label="Eliminar"
+                          className="ml-auto"
+                          onClick={() => removeItem(line.productId, line.shadeId)}
                         >
-                          <Plus className="size-3" />
+                          <Trash2Icon />
                         </Button>
                       </div>
-                      <span className="text-sm font-bold">
-                        {formatPrice(product.price * item.quantity)}
-                      </span>
                     </div>
-                  </div>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={clear}
-                className="cursor-pointer text-xs font-medium text-muted-foreground underline-offset-2 hover:text-destructive hover:underline"
-              >
-                Vaciar carrito
-              </button>
-            </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </ScrollArea>
+        )}
 
-            <SheetFooter className="border-t border-border">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Subtotal</span>
-                <span className="text-xl font-bold">{formatPrice(subtotal)}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                El costo de envío se confirma por WhatsApp según tu zona.
-              </p>
-              <Button size="lg" className="w-full rounded-full" asChild>
-                <a href={checkoutUrl} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="size-4" />
-                  Finalizar pedido por WhatsApp
-                </a>
-              </Button>
-            </SheetFooter>
-          </>
+        {lines.length > 0 && (
+          <SheetFooter className="border-t border-foreground/8">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Subtotal</span>
+              <span className="font-heading text-lg">{formatUsd(subtotal)}</span>
+            </div>
+            <Button
+              size="lg"
+              className="h-11 w-full"
+              render={<Link href="/carrito" onClick={() => onOpenChange(false)} />}
+            >
+              Confirmar pedido
+            </Button>
+          </SheetFooter>
         )}
       </SheetContent>
     </Sheet>
