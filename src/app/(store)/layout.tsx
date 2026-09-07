@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
 import { CatalogHydrator } from "@/components/catalog-hydrator"
@@ -5,7 +6,24 @@ import { Providers } from "@/components/providers"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
-import { getStorefront } from "@/lib/catalog"
+import { getShop, getStorefront } from "@/lib/catalog"
+
+export const dynamic = "force-dynamic"
+
+export async function generateMetadata(): Promise<Metadata> {
+  const shop = await getShop()
+  return {
+    title: {
+      default: `${shop.fullName} · Maquillaje y skincare`,
+      template: `%s · ${shop.fullName}`,
+    },
+    description: shop.description,
+    icons: {
+      icon: shop.logoUrl,
+      apple: shop.logoUrl,
+    },
+  }
+}
 
 export default async function StoreLayout({ children }: { children: ReactNode }) {
   const { shop, products, categories } = await getStorefront()

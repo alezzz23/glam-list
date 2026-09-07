@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { Outfit, Playfair_Display } from "next/font/google"
 
-import { getShop } from "@/lib/catalog"
+import { defaultShop } from "@/lib/site-defaults"
 
 import "./globals.css"
 
@@ -16,19 +16,16 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 })
 
-export async function generateMetadata(): Promise<Metadata> {
-  const shop = await getShop()
-  return {
-    title: {
-      default: `${shop.fullName} · Maquillaje y skincare`,
-      template: `%s · ${shop.fullName}`,
-    },
-    description: shop.description,
-    icons: {
-      icon: shop.logoUrl,
-      apple: shop.logoUrl,
-    },
-  }
+export const metadata: Metadata = {
+  title: {
+    default: `${defaultShop.fullName} · Maquillaje y skincare`,
+    template: `%s · ${defaultShop.fullName}`,
+  },
+  description: defaultShop.description,
+  icons: {
+    icon: defaultShop.logoUrl,
+    apple: defaultShop.logoUrl,
+  },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
