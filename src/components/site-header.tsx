@@ -22,7 +22,7 @@ const links = [
 
 export function SiteHeader() {
   const pathname = usePathname()
-  const { count } = useCart()
+  const { count, ready } = useCart()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -114,11 +114,11 @@ export function SiteHeader() {
               buttonVariants({ variant: "outline" }),
               "relative h-10 rounded-full px-3"
             )}
-            aria-label={count ? `Abrir carrito, ${count} productos` : "Abrir carrito"}
+            aria-label={ready && count ? `Abrir carrito, ${count} productos` : "Abrir carrito"}
           >
             <ShoppingBagIcon className="size-4" />
             <span className="hidden sm:inline">Bolsa</span>
-            {count > 0 ? (
+            {ready && count > 0 ? (
               <span className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
                 {count}
               </span>

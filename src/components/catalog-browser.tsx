@@ -65,6 +65,7 @@ export function CatalogBrowser({ products }: { products: Product[] }) {
             placeholder="Buscar sérum, labial, FPS…"
             className="h-11 rounded-full bg-card pr-4 pl-10"
             aria-label="Buscar productos"
+            type="search"
           />
         </div>
         <div className="flex flex-wrap gap-2">
