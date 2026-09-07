@@ -61,7 +61,7 @@ export function SiteFooter() {
             </li>
             <li>
               <a
-                href={`https://instagram.com/${shop.instagram}`}
+                href={`https://www.instagram.com/${shop.instagram}/`}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-primary"

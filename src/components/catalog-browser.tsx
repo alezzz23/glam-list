@@ -86,27 +86,27 @@ export function CatalogBrowser({
   }, [products, categoria, query, sort])
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="space-y-3 sm:space-y-8">
+      <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="relative max-w-md flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar sérum, labial, FPS…"
-            className="h-11 rounded-full bg-card pr-4 pl-10"
+            className="h-10 rounded-full bg-card pr-4 pl-10 sm:h-11"
             aria-label="Buscar productos"
             type="search"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
           {sorts.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setSort(item.id)}
               className={cn(
-                "rounded-full px-3 py-1.5 text-sm transition-colors",
+                "shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors",
                 sort === item.id ? "bg-primary text-primary-foreground" : "bg-secondary hover:bg-secondary/80"
               )}
             >
@@ -151,10 +151,10 @@ export function CatalogBrowser({
         </div>
       ) : (
         <>
-          <p className="text-sm text-muted-foreground">
+          <p className="hidden text-sm text-muted-foreground sm:block">
             {filtered.length} {filtered.length === 1 ? "producto" : "productos"}
           </p>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-5 lg:grid-cols-3">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

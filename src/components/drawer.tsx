@@ -60,7 +60,7 @@ export function Drawer({
       />
       <div
         role="dialog"
-        aria-modal={docked ? undefined : true}
+        aria-modal={mode === "modal" ? true : undefined}
         className={cn(
           "fixed inset-y-0 z-[81] flex w-[min(100%,24rem)] flex-col bg-background shadow-2xl",
           side === "left" ? "left-0" : "right-0"

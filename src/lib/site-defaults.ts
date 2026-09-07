@@ -10,7 +10,7 @@ export const defaultShop: Shop = {
   footerText:
     "Boutique de maquillaje y skincare en Venezuela. Pedidos por WhatsApp, precios en dólares y envíos a todo el país.",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "584120000000",
-  instagram: "bloomshop.ve",
+  instagram: "bloom_shop.ve",
   email: "hola@bloomshop.ve",
   location: "Caracas, Venezuela",
   hours: "Lunes a sábado, 9:00 a.m. – 6:00 p.m.",
@@ -77,7 +77,7 @@ export const defaultAbout: AboutContent = {
   paragraphs: [
     "Bloom Shop.VE nació en Caracas para reunir maquillaje y skincare que se sientan bien en el clima de aquí: humedad, sol y aire acondicionado. No somos una tienda de mil referencias; curamos una colección corta para que cada producto tenga un lugar en tu ritual.",
     "El nombre y la flor de cerezo del logo hablan de eso: algo que florece en su momento, con calma. Pedimos por WhatsApp porque así trabajamos la mayoría de los emprendimientos que nos gustan: con conversación, no con un checkout frío.",
-    "Estamos en Caracas, Venezuela. Horario: Lunes a sábado, 9:00 a.m. – 6:00 p.m. Instagram: @bloomshop.ve.",
+    "Estamos en Caracas, Venezuela. Horario: Lunes a sábado, 9:00 a.m. – 6:00 p.m. Instagram: @bloom_shop.ve.",
   ],
 }
 
