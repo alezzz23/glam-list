@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Abre [http://127.0.0.1:4317](http://127.0.0.1:4317).
+Abre [http://localhost:43127](http://localhost:43127).
 
 ```bash
 npm run build
