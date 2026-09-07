@@ -12,9 +12,11 @@ export const dynamic = "force-dynamic"
 
 export async function generateMetadata(): Promise<Metadata> {
   const shop = await getShop()
+  const defaultTitle = `${shop.fullName} · Maquillaje y skincare`
   return {
     title: {
-      default: `${shop.fullName} · Maquillaje y skincare`,
+      default: defaultTitle,
+      absolute: defaultTitle,
       template: `%s · ${shop.fullName}`,
     },
     description: shop.description,
