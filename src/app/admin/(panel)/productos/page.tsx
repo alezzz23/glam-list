@@ -1,8 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import { deleteProductAction } from "@/app/admin/actions/catalog"
-import { getCategories, getProducts } from "@/lib/catalog"
+import { DeleteProductButton } from "@/components/admin/delete-product-button"
+import { getAdminCategories, getAdminProducts } from "@/lib/catalog"
 import { formatPrice } from "@/lib/format"
 
 export const metadata = {
@@ -16,7 +16,7 @@ export default async function AdminProductsPage({
 }) {
   const params = await searchParams
   const q = typeof params.q === "string" ? params.q.trim().toLowerCase() : ""
-  const [products, categories] = await Promise.all([getProducts(), getCategories()])
+  const [products, categories] = await Promise.all([getAdminProducts(), getAdminCategories()])
   const names = new Map(categories.map((category) => [category.id, category.name]))
   const filtered = q
     ? products.filter(
@@ -91,12 +91,7 @@ export default async function AdminProductsPage({
                     <Link href={`/admin/productos/${product.id}`} className="underline-offset-4 hover:underline">
                       Editar
                     </Link>
-                    <form action={deleteProductAction}>
-                      <input type="hidden" name="id" value={product.id} />
-                      <button type="submit" className="text-destructive">
-                        Borrar
-                      </button>
-                    </form>
+                    <DeleteProductButton id={product.id} name={product.name} />
                   </div>
                 </td>
               </tr>

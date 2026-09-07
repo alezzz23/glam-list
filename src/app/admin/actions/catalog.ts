@@ -148,14 +148,45 @@ export async function updateProductAction(
   return { success: "Producto actualizado." }
 }
 
-export async function deleteProductAction(formData: FormData) {
+export async function deleteProductAction(
+  _prev: CatalogState,
+  formData: FormData
+): Promise<CatalogState> {
   await requireAdmin()
   const id = readString(formData, "id")
-  const product = await prisma.product.findUnique({ where: { id }, select: { slug: true } })
-  if (!product) return
-  await prisma.product.delete({ where: { id } })
-  revalidateStorefront(product.slug)
+  if (!id) return { error: "Falta el producto." }
+
+  let slug: string | undefined
+  try {
+    const product = await prisma.product.findUnique({ where: { id }, select: { slug: true } })
+    if (!product) return { error: "El producto ya no existe." }
+    await prisma.product.delete({ where: { id } })
+    slug = product.slug
+  } catch (error) {
+    console.error("deleteProductAction", error)
+    return { error: "No se pudo borrar el producto." }
+  }
+
+  revalidateStorefront(slug)
   redirect("/admin/productos")
+}
+
+export async function updateProductImageAction(productId: string, imageUrl: string): Promise<CatalogState> {
+  await requireAdmin()
+  if (!productId || !imageUrl) return { error: "Falta la imagen." }
+
+  try {
+    const product = await prisma.product.update({
+      where: { id: productId },
+      data: { image: imageUrl },
+      select: { slug: true },
+    })
+    revalidateStorefront(product.slug)
+    return { success: "Foto guardada." }
+  } catch (error) {
+    console.error("updateProductImageAction", error)
+    return { error: "La imagen se subió, pero no se pudo guardar en el producto." }
+  }
 }
 
 export async function createCategoryAction(

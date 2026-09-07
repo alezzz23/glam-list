@@ -133,3 +133,29 @@
     letter-spacing: -0.02em;
   }
 }
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.catalog-grid > * {
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .catalog-grid {
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .catalog-grid-related {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

@@ -1,12 +1,12 @@
 import { CategoryCreateForm, CategoryEditForm } from "@/components/admin/category-manager"
-import { getCategories } from "@/lib/catalog"
+import { getAdminCategories } from "@/lib/catalog"
 
 export const metadata = {
   title: "Categorías",
 }
 
 export default async function AdminCategoriesPage() {
-  const categories = await getCategories()
+  const categories = await getAdminCategories()
 
   return (
     <div className="space-y-6">

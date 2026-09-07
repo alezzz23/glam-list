@@ -1,12 +1,12 @@
 import { ContentForm } from "@/components/admin/content-form"
-import { getSiteContent } from "@/lib/catalog"
+import { getAdminSiteContent } from "@/lib/catalog"
 
 export const metadata = {
   title: "Páginas",
 }
 
 export default async function AdminContentPage() {
-  const content = await getSiteContent()
+  const content = await getAdminSiteContent()
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

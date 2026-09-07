@@ -1,12 +1,12 @@
 import { ProductForm } from "@/components/admin/product-form"
-import { getCategories } from "@/lib/catalog"
+import { getAdminCategories } from "@/lib/catalog"
 
 export const metadata = {
   title: "Nuevo producto",
 }
 
 export default async function NewProductPage() {
-  const categories = await getCategories()
+  const categories = await getAdminCategories()
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

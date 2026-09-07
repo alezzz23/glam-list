@@ -112,6 +112,32 @@ export const getProducts = cache(async (): Promise<Product[]> => {
   return (await loadStorefront()).products
 })
 
+export const getAdminShop = cache(async (): Promise<Shop> => {
+  return (await loadFreshStorefront()).shop
+})
+
+export const getAdminCategories = cache(async (): Promise<Category[]> => {
+  return (await loadFreshStorefront()).categories
+})
+
+export const getAdminProducts = cache(async (): Promise<Product[]> => {
+  return (await loadFreshStorefront()).products
+})
+
+export const getAdminSiteContent = cache(async (): Promise<SiteContent> => {
+  return (await loadFreshStorefront()).content
+})
+
+export const getAdminProduct = cache(async (id: string) => {
+  return queryCatalog(null, async () => {
+    const row = await prisma.product.findUnique({
+      where: { id },
+      include: { shades: true },
+    })
+    return row ? mapProduct(row) : null
+  })
+})
+
 export const getProductBySlug = cache(async (slug: string) => {
   const products = await getProducts()
   return products.find((product) => product.slug === slug)
@@ -228,33 +254,38 @@ const emptyStorefront = {
   },
 }
 
-const getCachedStorefront = unstable_cache(
-  async () => {
-    const [shopRow, categoryRows, productRows, contentRow] = await Promise.all([
-      prisma.shopSettings.findUnique({ where: { id: "default" } }),
-      prisma.category.findMany({ orderBy: { sortOrder: "asc" } }),
-      prisma.product.findMany({
-        include: { shades: true },
-        orderBy: [{ featured: "desc" }, { name: "asc" }],
-      }),
-      prisma.siteContent.findUnique({ where: { id: "default" } }),
-    ])
+async function fetchStorefrontFromDb() {
+  const [shopRow, categoryRows, productRows, contentRow] = await Promise.all([
+    prisma.shopSettings.findUnique({ where: { id: "default" } }),
+    prisma.category.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.product.findMany({
+      include: { shades: true },
+      orderBy: [{ featured: "desc" }, { name: "asc" }],
+    }),
+    prisma.siteContent.findUnique({ where: { id: "default" } }),
+  ])
 
-    return {
-      shop: shopRow ? mapShop(shopRow) : defaultShop,
-      categories: categoryRows.map(mapCategory),
-      products: productRows.map(mapProduct),
-      content: {
-        home: parseHome(contentRow?.home),
-        about: parseAbout(contentRow?.about),
-        faqs: parseFaqs(contentRow?.faqs),
-      },
-    }
-  },
-  ["storefront"],
-  { tags: ["storefront"], revalidate: 60 }
-)
+  return {
+    shop: shopRow ? mapShop(shopRow) : defaultShop,
+    categories: categoryRows.map(mapCategory),
+    products: productRows.map(mapProduct),
+    content: {
+      home: parseHome(contentRow?.home),
+      about: parseAbout(contentRow?.about),
+      faqs: parseFaqs(contentRow?.faqs),
+    },
+  }
+}
+
+const getCachedStorefront = unstable_cache(fetchStorefrontFromDb, ["storefront"], {
+  tags: ["storefront"],
+  revalidate: 60,
+})
 
 async function loadStorefront() {
   return queryCatalog(emptyStorefront, getCachedStorefront)
+}
+
+async function loadFreshStorefront() {
+  return queryCatalog(emptyStorefront, fetchStorefrontFromDb)
 }

@@ -25,7 +25,7 @@ export default async function CatalogoPage() {
 
 function CatalogSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
+    <div className="catalog-grid">
       {Array.from({ length: 6 }).map((_, index) => (
         <div key={index} className="aspect-[3/4] animate-pulse rounded-2xl bg-secondary sm:h-96 sm:aspect-auto sm:rounded-3xl" />
       ))}

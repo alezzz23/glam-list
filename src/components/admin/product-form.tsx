@@ -119,7 +119,7 @@ export function ProductForm({
         </Field>
       </div>
 
-      <ImageField name="image" label="Imagen" defaultValue={product?.image} />
+      <ImageField name="image" label="Imagen" defaultValue={product?.image} productId={product?.id} />
 
       <Field label="Descripción">
         <Textarea name="description" rows={5} defaultValue={product?.description} className="rounded-2xl" />

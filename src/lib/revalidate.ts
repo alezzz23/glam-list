@@ -1,11 +1,12 @@
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag, updateTag } from "next/cache"
 
 export function revalidateStorefront(slug?: string) {
+  updateTag("storefront")
   revalidateTag("storefront", { expire: 0 })
   revalidatePath("/", "layout")
   revalidatePath("/nosotros")
   revalidatePath("/carrito")
-  revalidatePath("/admin")
+  revalidatePath("/admin", "layout")
   revalidatePath("/admin/productos")
   revalidatePath("/admin/categorias")
   revalidatePath("/admin/tienda")

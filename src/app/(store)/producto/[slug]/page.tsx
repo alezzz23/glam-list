@@ -92,7 +92,7 @@ export default async function ProductoPage({ params }: { params: Promise<{ slug:
       {related.length > 0 ? (
         <section className="mt-16">
           <h2 className="font-heading text-3xl">También en esta línea</h2>
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+          <div className="catalog-grid catalog-grid-related mt-6">
             {related.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}

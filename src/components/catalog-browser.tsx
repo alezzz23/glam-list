@@ -154,7 +154,7 @@ export function CatalogBrowser({
           <p className="hidden text-sm text-muted-foreground sm:block">
             {filtered.length} {filtered.length === 1 ? "producto" : "productos"}
           </p>
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-5 lg:grid-cols-3">
+          <div className="catalog-grid">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

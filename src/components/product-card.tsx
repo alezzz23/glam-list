@@ -25,7 +25,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "group flex h-full flex-col overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/8 transition-shadow hover:shadow-[0_18px_40px_-24px_rgba(45,41,38,0.45)] sm:rounded-3xl",
+        "group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/8 transition-shadow hover:shadow-[0_18px_40px_-24px_rgba(45,41,38,0.45)] sm:rounded-3xl",
         className
       )}
     >

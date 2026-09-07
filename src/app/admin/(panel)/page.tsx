@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { AlertTriangleIcon, PackageIcon, SparklesIcon, StoreIcon } from "lucide-react"
 
-import { getCategories, getProducts, getShop } from "@/lib/catalog"
+import { getAdminCategories, getAdminProducts, getAdminShop } from "@/lib/catalog"
 import { formatPrice } from "@/lib/format"
 
 export const metadata = {
@@ -10,9 +10,9 @@ export const metadata = {
 
 export default async function AdminHomePage() {
   const [products, categories, shop] = await Promise.all([
-    getProducts(),
-    getCategories(),
-    getShop(),
+    getAdminProducts(),
+    getAdminCategories(),
+    getAdminShop(),
   ])
   const soldOut = products.filter((product) => product.stock <= 0)
   const low = products.filter((product) => product.stock > 0 && product.stock <= 4)

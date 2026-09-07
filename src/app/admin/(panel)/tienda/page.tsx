@@ -1,12 +1,12 @@
 import { ShopForm } from "@/components/admin/shop-form"
-import { getShop } from "@/lib/catalog"
+import { getAdminShop } from "@/lib/catalog"
 
 export const metadata = {
   title: "Tienda",
 }
 
 export default async function AdminShopPage() {
-  const shop = await getShop()
+  const shop = await getAdminShop()
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
