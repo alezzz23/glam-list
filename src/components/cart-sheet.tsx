@@ -1,9 +1,12 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import Link from "next/link"
+import { MinusIcon, PlusIcon, ShoppingBagIcon, Trash2Icon } from "lucide-react"
+
+import { ProductStage } from "@/components/product-visual"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Sheet,
   SheetContent,
@@ -11,120 +14,152 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { ProductVisual } from "@/components/product-visual";
-import { shadeForLine, useCart } from "@/lib/cart-context";
-import { formatUsd } from "@/lib/format";
-import { getProductById } from "@/lib/products";
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { useCart } from "@/lib/cart"
+import { store, whatsappUrl } from "@/lib/config"
+import { formatPrice } from "@/lib/format"
 
-type Props = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-};
+export function CartSheet() {
+  const { items, count, subtotal, setQuantity, remove } = useCart()
 
-export function CartSheet({ open, onOpenChange }: Props) {
-  const { lines, setQuantity, removeItem, subtotal, itemCount } = useCart();
+  const message = [
+    `Hola ${store.name}, quiero hacer este pedido:`,
+    "",
+    ...items.map(
+      (item) =>
+        `• ${item.quantity}× ${item.product.name} — ${formatPrice(item.product.price * item.quantity)}`
+    ),
+    "",
+    `Total: ${formatPrice(subtotal)}`,
+    "",
+    "Quedo atenta a disponibilidad, envío y formas de pago.",
+  ].join("\n")
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="bg-[#FBF7F2] p-0 sm:max-w-md">
-        <SheetHeader className="border-b border-foreground/8">
-          <SheetTitle className="font-heading text-xl">Tu pedido</SheetTitle>
+    <Sheet>
+      <SheetTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            aria-label="Abrir carrito"
+          />
+        }
+      >
+        <ShoppingBagIcon />
+        {count > 0 ? (
+          <Badge className="absolute -top-1 -right-1 h-5 min-w-5 px-1 text-[0.65rem]">
+            {count}
+          </Badge>
+        ) : null}
+      </SheetTrigger>
+      <SheetContent className="bg-background sm:max-w-md">
+        <SheetHeader>
+          <SheetTitle className="font-heading text-2xl">Tu carrito</SheetTitle>
           <SheetDescription>
-            {itemCount === 0
-              ? "Aún no has elegido productos."
-              : `${itemCount} ${itemCount === 1 ? "producto" : "productos"} listos para WhatsApp.`}
+            El pedido se confirma por WhatsApp. Precios en USD.
           </SheetDescription>
         </SheetHeader>
-
-        {lines.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-            <p className="text-muted-foreground">El catálogo te está esperando.</p>
-            <Button
-              render={<Link href="/catalogo" onClick={() => onOpenChange(false)} />}
-            >
+        {items.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+            <ShoppingBagIcon className="mb-3 size-10 text-lavender" />
+            <p className="font-heading text-xl">Aún está vacío</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Agrega maquillaje o skincare y arma tu ritual.
+            </p>
+            <Button className="mt-5 h-10 px-5" render={<Link href="/catalogo" />}>
               Ver catálogo
             </Button>
           </div>
         ) : (
-          <ScrollArea className="flex-1 px-4">
-            <ul className="flex flex-col gap-4 py-2">
-              {lines.map((line) => {
-                const product = getProductById(line.productId);
-                if (!product) return null;
-                const shade = shadeForLine(line.productId, line.shadeId);
-                return (
-                  <li
-                    key={`${line.productId}-${line.shadeId ?? "default"}`}
-                    className="flex gap-3"
-                  >
-                    <ProductVisual
-                      vessel={product.vessel}
-                      colors={product.colors}
-                      className="size-16 shrink-0 overflow-hidden rounded-xl"
-                    />
+          <>
+            <ScrollArea className="flex-1 px-4">
+              <ul className="flex flex-col gap-4 pb-4">
+                {items.map(({ product, quantity }) => (
+                  <li key={product.slug} className="flex gap-3">
+                    <div className="size-20 overflow-hidden rounded-xl ring-1 ring-foreground/8">
+                      <ProductStage
+                        kind={product.visual}
+                        from={product.palette.from}
+                        to={product.palette.to}
+                        accent={product.palette.accent}
+                        className="h-full w-full"
+                      />
+                    </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{product.name}</p>
-                      {shade && (
-                        <p className="text-xs text-muted-foreground">{shade.name}</p>
-                      )}
-                      <p className="mt-0.5 text-sm">{formatUsd(product.price)}</p>
+                      <Link
+                        href={`/producto/${product.slug}`}
+                        className="font-heading text-base leading-tight hover:underline"
+                      >
+                        {product.name}
+                      </Link>
+                      <p className="text-sm text-muted-foreground">
+                        {formatPrice(product.price)}
+                      </p>
                       <div className="mt-2 flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon-xs"
-                          aria-label="Quitar uno"
-                          onClick={() =>
-                            setQuantity(line.productId, line.shadeId, line.quantity - 1)
-                          }
-                        >
-                          <MinusIcon />
-                        </Button>
-                        <span className="w-5 text-center text-sm">{line.quantity}</span>
-                        <Button
-                          variant="outline"
-                          size="icon-xs"
-                          aria-label="Agregar uno"
-                          onClick={() =>
-                            setQuantity(line.productId, line.shadeId, line.quantity + 1)
-                          }
-                        >
-                          <PlusIcon />
-                        </Button>
+                        <div className="flex items-center rounded-full border border-border">
+                          <Button
+                            variant="ghost"
+                            size="icon-xs"
+                            aria-label="Quitar uno"
+                            onClick={() => setQuantity(product.slug, quantity - 1)}
+                          >
+                            <MinusIcon />
+                          </Button>
+                          <span className="w-6 text-center text-sm">{quantity}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon-xs"
+                            aria-label="Agregar uno"
+                            onClick={() => setQuantity(product.slug, quantity + 1)}
+                          >
+                            <PlusIcon />
+                          </Button>
+                        </div>
                         <Button
                           variant="ghost"
                           size="icon-xs"
-                          aria-label="Eliminar"
-                          className="ml-auto"
-                          onClick={() => removeItem(line.productId, line.shadeId)}
+                          aria-label={`Quitar ${product.name}`}
+                          onClick={() => remove(product.slug)}
                         >
                           <Trash2Icon />
                         </Button>
                       </div>
                     </div>
                   </li>
-                );
-              })}
-            </ul>
-          </ScrollArea>
-        )}
-
-        {lines.length > 0 && (
-          <SheetFooter className="border-t border-foreground/8">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Subtotal</span>
-              <span className="font-heading text-lg">{formatUsd(subtotal)}</span>
-            </div>
-            <Button
-              size="lg"
-              className="h-11 w-full"
-              render={<Link href="/carrito" onClick={() => onOpenChange(false)} />}
-            >
-              Confirmar pedido
-            </Button>
-          </SheetFooter>
+                ))}
+              </ul>
+            </ScrollArea>
+            <SheetFooter className="border-t">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span className="font-medium">{formatPrice(subtotal)}</span>
+              </div>
+              <Button
+                className="h-11 w-full px-4 text-base"
+                render={
+                  <a
+                    href={whatsappUrl(message)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+              >
+                Pedir por WhatsApp
+              </Button>
+              <Button
+                variant="outline"
+                className="h-10 w-full"
+                render={<Link href="/carrito" />}
+              >
+                Ver carrito
+              </Button>
+            </SheetFooter>
+          </>
         )}
       </SheetContent>
     </Sheet>
-  );
+  )
 }

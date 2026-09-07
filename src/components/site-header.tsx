@@ -1,58 +1,62 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { MenuIcon, ShoppingBagIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { MenuIcon, SearchIcon } from "lucide-react"
+
+import { CartSheet } from "@/components/cart-sheet"
+import { Button } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { CartSheet } from "@/components/cart-sheet";
-import { useCart } from "@/lib/cart-context";
-import { cn } from "@/lib/utils";
+} from "@/components/ui/sheet"
+import { store } from "@/lib/config"
+import { cn } from "@/lib/utils"
 
 const links = [
   { href: "/", label: "Inicio" },
   { href: "/catalogo", label: "Catálogo" },
-  { href: "/catalogo?departamento=maquillaje", label: "Maquillaje" },
-  { href: "/catalogo?departamento=skincare", label: "Skincare" },
+  { href: "/catalogo?categoria=maquillaje", label: "Maquillaje" },
+  { href: "/catalogo?categoria=skincare", label: "Skincare" },
   { href: "/nosotros", label: "Nosotros" },
-];
+]
 
 export function SiteHeader() {
-  const pathname = usePathname();
-  const { itemCount, hydrated } = useCart();
-  const [open, setOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
+  const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-40 border-b border-foreground/8 bg-[#FBF7F2]/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:h-[4.5rem] sm:px-6">
-        <Sheet open={open} onOpenChange={setOpen}>
+    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/85 backdrop-blur-md">
+      <div className="bg-espresso text-center text-[0.7rem] tracking-[0.22em] text-cream uppercase">
+        Envíos a toda Venezuela · Precios en USD
+      </div>
+      <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:h-[4.5rem] sm:px-6">
+        <Sheet>
           <SheetTrigger
             render={
-              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Abrir menú" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                aria-label="Abrir menú"
+              />
             }
           >
             <MenuIcon />
           </SheetTrigger>
-          <SheetContent side="left" className="bg-[#FBF7F2]">
+          <SheetContent side="left" className="w-72 bg-background">
             <SheetHeader>
-              <SheetTitle className="font-heading">Bloom Shop.VE</SheetTitle>
+              <SheetTitle className="font-heading text-2xl">Menú</SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col gap-1 px-4">
               {links.map((link) => (
                 <Link
                   key={link.href + link.label}
                   href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-base hover:bg-[#F3E6EA]"
+                  className="rounded-lg px-2 py-2.5 text-base text-espresso hover:bg-muted"
                 >
                   {link.label}
                 </Link>
@@ -61,61 +65,57 @@ export function SiteHeader() {
           </SheetContent>
         </Sheet>
 
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2.5">
           <Image
             src="/logo.jpg"
-            alt="Bloom Shop.VE"
-            width={160}
-            height={160}
-            className="h-12 w-12 rounded-full object-cover ring-1 ring-foreground/10 sm:h-14 sm:w-14"
+            alt={store.name}
+            width={1024}
+            height={1024}
+            className="size-11 rounded-full ring-1 ring-foreground/10 sm:size-12"
             priority
           />
-          <span className="font-heading text-lg leading-none tracking-tight sm:text-xl">
+          <span className="font-heading text-xl leading-none tracking-tight sm:text-[1.35rem]">
             Bloom Shop
-            <span className="text-[#A78BA5]">.VE</span>
+            <span className="text-lavender">.VE</span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="mx-auto hidden items-center gap-1 md:flex">
           {links.map((link) => {
-            const path = link.href.split("?")[0];
-            const isCurrent =
-              link.href === "/"
+            const path = link.href.split("?")[0]
+            const active =
+              path === "/"
                 ? pathname === "/"
-                : link.href === "/catalogo"
-                  ? pathname.startsWith("/catalogo")
-                  : pathname === path && !link.href.includes("?");
+                : path === "/catalogo"
+                  ? pathname.startsWith("/catalogo") &&
+                    link.label === "Catálogo"
+                  : pathname === path
             return (
               <Link
                 key={link.href + link.label}
                 href={link.href}
                 className={cn(
-                  "text-sm tracking-wide transition-colors hover:text-[#A78BA5]",
-                  isCurrent ? "text-foreground" : "text-muted-foreground",
+                  "rounded-full px-3 py-1.5 text-sm text-espresso/80 transition hover:bg-muted hover:text-espresso",
+                  active && "bg-muted text-espresso"
                 )}
               >
                 {link.label}
               </Link>
-            );
+            )
           })}
         </nav>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-          aria-label="Abrir pedido"
-          onClick={() => setCartOpen(true)}
-        >
-          <ShoppingBagIcon />
-          {hydrated && itemCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#A78BA5] text-[10px] font-medium text-white">
-              {itemCount}
-            </span>
-          )}
-        </Button>
-        <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
+        <div className="ml-auto flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            render={<Link href="/catalogo" aria-label="Buscar en el catálogo" />}
+          >
+            <SearchIcon />
+          </Button>
+          <CartSheet />
+        </div>
       </div>
     </header>
-  );
+  )
 }

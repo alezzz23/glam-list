@@ -1,19 +1,22 @@
-import type { Metadata } from "next";
-import { Outfit, Playfair_Display } from "next/font/google";
-import { Providers } from "@/components/providers";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import "./globals.css";
+import type { Metadata } from "next"
+import { Cormorant_Garamond, Figtree } from "next/font/google"
 
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
+import { Providers } from "@/components/providers"
+import { SiteFooter } from "@/components/site-footer"
+import { SiteHeader } from "@/components/site-header"
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+import "./globals.css"
+
+const heading = Cormorant_Garamond({
   subsets: ["latin"],
-});
+  variable: "--font-cormorant",
+  weight: ["500", "600", "700"],
+})
+
+const sans = Figtree({
+  subsets: ["latin"],
+  variable: "--font-figtree",
+})
 
 export const metadata: Metadata = {
   title: {
@@ -21,14 +24,16 @@ export const metadata: Metadata = {
     template: "%s · Bloom Shop.VE",
   },
   description:
-    "Catálogo de maquillaje y skincare con envíos a todo Venezuela. Pedidos por WhatsApp.",
-};
+    "Catálogo de Bloom Shop.VE: maquillaje y skincare con pedidos por WhatsApp. Envíos a Caracas y toda Venezuela.",
+  icons: { icon: "/logo.jpg" },
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${outfit.variable} ${playfair.variable} h-full antialiased`}
+      className={`${heading.variable} ${sans.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
         <Providers>
@@ -38,5 +43,5 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Providers>
       </body>
     </html>
-  );
+  )
 }
