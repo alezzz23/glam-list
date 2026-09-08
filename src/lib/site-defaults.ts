@@ -9,7 +9,7 @@ export const defaultShop: Shop = {
     "Catálogo de maquillaje y skincare en Venezuela. Elige tus favoritos y cierra el pedido por WhatsApp.",
   footerText:
     "Boutique de maquillaje y skincare en Venezuela. Pedidos por WhatsApp, precios en dólares y envíos a todo el país.",
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "584120000000",
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "584124900939",
   instagram: "bloom_shop.ve",
   email: "hola@bloomshop.ve",
   location: "Caracas, Venezuela",

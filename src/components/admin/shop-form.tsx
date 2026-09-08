@@ -25,8 +25,14 @@ export function ShopForm({ shop }: { shop: Shop }) {
         <Field label="Lema" className="sm:col-span-2">
           <Input name="tagline" defaultValue={shop.tagline} className="h-10 rounded-2xl" />
         </Field>
-        <Field label="WhatsApp" hint="Código de país + número, sin +">
-          <Input name="whatsapp" required defaultValue={shop.whatsapp} className="h-10 rounded-2xl" />
+        <Field label="WhatsApp" hint="Venezuela: 58 + número sin el 0. Ejemplo: 584124900939">
+          <Input
+            name="whatsapp"
+            required
+            defaultValue={shop.whatsapp}
+            inputMode="numeric"
+            className="h-10 rounded-2xl"
+          />
         </Field>
         <Field label="Instagram">
           <Input name="instagram" defaultValue={shop.instagram} className="h-10 rounded-2xl" />

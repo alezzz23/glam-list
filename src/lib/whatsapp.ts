@@ -2,10 +2,12 @@ import type { CartLine } from "@/lib/cart"
 import { formatPrice } from "@/lib/format"
 import { getProductById } from "@/lib/products"
 import { shop } from "@/lib/shop"
+import { whatsappChatUrl } from "@/lib/whatsapp-phone"
 
-export function whatsappUrl(text: string) {
-  const phone = shop.whatsapp.replace(/\D/g, "")
-  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+export { normalizeWhatsAppPhone } from "@/lib/whatsapp-phone"
+
+export function whatsappUrl(text: string, phone = shop.whatsapp) {
+  return whatsappChatUrl(phone, text)
 }
 
 export function productInquiryText(name: string, shadeName?: string) {

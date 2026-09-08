@@ -45,7 +45,7 @@ export default async function NosotrosPage() {
           className="h-11 rounded-full px-6"
           render={
             <a
-              href={whatsappUrl(`Hola ${shop.fullName}, quiero hacer una consulta sobre productos y envíos.`)}
+              href={whatsappUrl(`Hola ${shop.fullName}, quiero hacer una consulta sobre productos y envíos.`, shop.whatsapp)}
               target="_blank"
               rel="noreferrer"
             />

@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { revalidateStorefront } from "@/lib/revalidate"
 import type { AboutContent, FaqItem } from "@/lib/types"
+import { normalizeWhatsAppPhone } from "@/lib/whatsapp-phone"
 
 export type SiteState = { error?: string; success?: string }
 
@@ -23,10 +24,13 @@ export async function updateShopAction(_prev: SiteState, formData: FormData): Pr
 
   const name = readString(formData, "name")
   const suffix = readString(formData, "suffix")
-  const whatsapp = readString(formData, "whatsapp").replace(/\D/g, "")
+  const whatsapp = normalizeWhatsAppPhone(readString(formData, "whatsapp"))
 
   if (!name || !whatsapp) {
     return { error: "Nombre y WhatsApp son obligatorios." }
+  }
+  if (whatsapp.length < 11) {
+    return { error: "WhatsApp debe ir con código de país. Venezuela: 58 y el número sin el 0." }
   }
 
   await prisma.shopSettings.update({

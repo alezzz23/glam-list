@@ -35,8 +35,8 @@ export default async function StoreLayout({ children }: { children: ReactNode })
       <Providers>
         <SiteHeader />
         <main className="flex-1">{children}</main>
-        <SiteFooter />
-        <WhatsAppFloat />
+        <SiteFooter shop={shop} />
+        <WhatsAppFloat phone={shop.whatsapp} shopName={shop.fullName} />
       </Providers>
     </CatalogHydrator>
   )

@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { CatalogLink } from "@/components/catalog-link"
-import { shop } from "@/lib/shop"
+import type { Shop } from "@/lib/types"
 import { whatsappUrl } from "@/lib/whatsapp"
 
 const footerLinks = [
@@ -12,7 +12,7 @@ const footerLinks = [
   { href: "/carrito", label: "Tu bolsa" },
 ]
 
-export function SiteFooter() {
+export function SiteFooter({ shop }: { shop: Shop }) {
   return (
     <footer className="mt-auto border-t border-border bg-[#f6efe8]">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
@@ -51,7 +51,7 @@ export function SiteFooter() {
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <a
-                href={whatsappUrl(`Hola, quiero información de ${shop.fullName}`)}
+                href={whatsappUrl(`Hola, quiero información de ${shop.fullName}`, shop.whatsapp)}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-primary"
